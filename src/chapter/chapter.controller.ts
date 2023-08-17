@@ -1,10 +1,10 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, ParseUUIDPipe, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
 
 import { ChapterService } from './chapter.service';
 import { CreateChapterDto, UpdateChapterDto, ChapterResponseDto, ChapterType } from 'src/dtos/chapter.dto';
 
 @Controller('chapters/:type')
-export class UserController {
+export class ChapterController {
 
   constructor(
     private readonly chapterService: ChapterService
@@ -21,7 +21,7 @@ export class UserController {
   @Get(':id')
   getChapterById(
     @Param('type') type: string,
-    @Param('id', ParseUUIDPipe) id: string
+    @Param('id', ParseIntPipe) id: number
   ): ChapterResponseDto {
     const chapterType = type === 'freemium' ? ChapterType.FREEMIUM : ChapterType.PREMIUM;
     return this.chapterService.getChapterById(chapterType, id);
@@ -30,16 +30,16 @@ export class UserController {
   @Post()
   createChapter(
     @Param('type') type: string,
-    @Body() {name}: CreateChapterDto
+    @Body() body: CreateChapterDto
   ): ChapterResponseDto {
     const chapterType = type === 'freemium' ? ChapterType.FREEMIUM : ChapterType.PREMIUM;
-    return this.chapterService.createChapter(chapterType, {name});
+    return this.chapterService.createChapter(chapterType, body);
   }
 
   @Put(':id')
   updateChapter(
     @Param('type') type: string,
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdateChapterDto,
   ): ChapterResponseDto {
     const chapterType = type === 'freemium' ? ChapterType.FREEMIUM : ChapterType.PREMIUM;
@@ -48,7 +48,7 @@ export class UserController {
 
   @HttpCode(204)
   @Delete(':id')
-  deleteChapter(@Param('id', ParseUUIDPipe) id: string){
+  deleteChapter(@Param('id', ParseIntPipe) id: number){
     return this.chapterService.deleteChapter(id);
   }
 }

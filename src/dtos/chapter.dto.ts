@@ -2,10 +2,10 @@ import { Exclude, Expose } from "class-transformer";
 import { IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString } from "class-validator";
 
 export interface Chapters {
-  users: {
+  chapters: {
     id: string,
     name: string,
-    level: number,
+    max_level: number,
     created_at: Date,
     updated_at: Date,
     chapterType: ChapterType
@@ -21,6 +21,10 @@ export class CreateChapterDto {
   @IsString()
   @IsNotEmpty()
   name: string;
+
+  @IsNumber()
+  @IsPositive()
+  max_level: number;
 }
 
 export class UpdateChapterDto {
@@ -32,13 +36,13 @@ export class UpdateChapterDto {
   @IsNumber()
   @IsPositive()
   @IsOptional()
-  level: number;
+  max_level: number;
 }
 
 export class ChapterResponseDto {
-  id: string;
+  id: number;
   name: string;
-  level: number;
+  max_level: number;
   type: ChapterType;
 
   @Exclude()

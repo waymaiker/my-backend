@@ -6,11 +6,12 @@ import { ChapterResponseDto, ChapterType } from 'src/dtos/chapter.dto';
 
 interface Chapter {
   name: string,
+  max_level: number
 }
 
 interface UpdateChapter {
   name?: string,
-  level?: number
+  max_level?: number
 }
 
 
@@ -19,24 +20,24 @@ export class ChapterService {
   getChapters(type: ChapterType): ChapterResponseDto[] {
     return data.chapters
       .filter((chapter) => chapter.type === type)
-      .map((user) => new ChapterResponseDto(user));
+      .map((chapter) => new ChapterResponseDto(chapter));
   }
 
-  getChapterById(type: ChapterType, id: string): ChapterResponseDto {
-    const user = data.chapters
+  getChapterById(type: ChapterType, id: number): ChapterResponseDto {
+    const chapter = data.chapters
       .filter((chapter) => chapter.type === type)
-      .find((user) => user.id === id)
+      .find((chapter) => chapter.id === id)
 
-    if(!user) return;
+    if(!chapter) return;
 
-    return new ChapterResponseDto(user);
+    return new ChapterResponseDto(chapter);
   }
 
-  createChapter(type: ChapterType, {name}: Chapter): ChapterResponseDto {
+  createChapter(type: ChapterType, {name, max_level}: Chapter): ChapterResponseDto {
     const newChapter = {
-      id: uuid(),
+      id: data.chapters.length.valueOf(),
       name,
-      level: 0,
+      max_level,
       created_at: new Date(),
       updated_at: new Date(),
       type
@@ -46,29 +47,29 @@ export class ChapterService {
     return new ChapterResponseDto(newChapter);
   }
 
-  updateChapter(type: ChapterType, id: string, body: UpdateChapter): ChapterResponseDto {
-    const userToUpdate = data.chapters
+  updateChapter(type: ChapterType, id: number, body: UpdateChapter): ChapterResponseDto {
+    const chapterToUpdate = data.chapters
       .filter((chapter) => chapter.type === type)
-      .find((user) => user.id === id)
+      .find((chapter) => chapter.id === id)
 
-    if(!userToUpdate) return;
+    if(!chapterToUpdate) return;
 
-    const userIndex = data.chapters.findIndex((user) => user.id === id)
-    data.chapters[userIndex] = {
-      ...data.chapters[userIndex],
+    const chapterIndex = data.chapters.findIndex((chapter) => chapter.id === id)
+    data.chapters[chapterIndex] = {
+      ...data.chapters[chapterIndex],
       ...body,
       updated_at: new Date()
     };
 
-    return new ChapterResponseDto(data.chapters[userIndex]);
+    return new ChapterResponseDto(data.chapters[chapterIndex]);
    }
 
-  deleteChapter(id: string){
-    const userIndex = data.chapters.findIndex((user) => user.id === id)
+  deleteChapter(id: number){
+    const chapterIndex = data.chapters.findIndex((chapter) => chapter.id === id)
 
-    if(userIndex === -1) return;
+    if(chapterIndex === -1) return;
 
-    data.chapters.splice(userIndex, 1);
+    data.chapters.splice(chapterIndex, 1);
     return;
   }
 }
