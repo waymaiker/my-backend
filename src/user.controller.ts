@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, ParseEnumPipe, ParseUUIDPipe, Post, Put } from '@nestjs/common';
 
 import { AccountType } from 'src/data';
-import { UserService } from './user.service';
-import { CreateUserDto, UpdateUserDto } from './dtos/user.dto';
+import { UserService } from 'src/user.service';
+import { CreateUserDto, UpdateUserDto, UserResponseDto } from 'src/dtos/user.dto';
 
 @Controller('users/:accountType')
 export class UserController {
@@ -12,7 +12,9 @@ export class UserController {
   ){}
 
   @Get()
-  getUsers(@Param('accountType',  new ParseEnumPipe(AccountType)) accountType: string) {
+  getUsers(
+    @Param('accountType', new ParseEnumPipe(AccountType)) accountType: string
+  ): UserResponseDto[] {
     const userAccountType = accountType === 'freemium' ? AccountType.FREEMIUM : AccountType.PREMIUM;
     return this.userService.getUsers(userAccountType);
   }
@@ -21,7 +23,7 @@ export class UserController {
   getUserById(
     @Param('accountType', new ParseEnumPipe(AccountType)) accountType: string,
     @Param('id', ParseUUIDPipe) id: string
-  ){
+  ): UserResponseDto {
     const userAccountType = accountType === 'freemium' ? AccountType.FREEMIUM : AccountType.PREMIUM;
     return this.userService.getUserById(userAccountType, id);
   }
@@ -30,7 +32,7 @@ export class UserController {
   createUser(
     @Param('accountType',  new ParseEnumPipe(AccountType)) accountType: string,
     @Body() {pseudo}: CreateUserDto
-  ){
+  ): UserResponseDto {
     const userAccountType = accountType === 'freemium' ? AccountType.FREEMIUM : AccountType.PREMIUM;
     return this.userService.createUser(userAccountType, {pseudo});
   }
@@ -40,7 +42,7 @@ export class UserController {
     @Param('accountType',  new ParseEnumPipe(AccountType)) accountType: string,
     @Param('id', ParseUUIDPipe) id: string,
     @Body() body: UpdateUserDto,
-  ){
+  ): UserResponseDto {
     const userAccountType = accountType === 'freemium' ? AccountType.FREEMIUM : AccountType.PREMIUM;
     return this.userService.updateUser(userAccountType, id, body);
   }

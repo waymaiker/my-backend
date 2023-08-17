@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { v4 as uuid } from 'uuid';
 
 import { AccountType, data } from "src/data";
+import { UserResponseDto } from "./dtos/user.dto";
 
 interface User {
   pseudo: string,
@@ -14,17 +15,23 @@ interface UpdateUser {
 
 @Injectable()
 export class UserService {
-  getUsers(type: AccountType){
-    return data.users.filter((users) => users.accountType === type);
-  }
-
-  getUserById(type: AccountType, id: string){
+  getUsers(type: AccountType): UserResponseDto[] {
     return data.users
       .filter((users) => users.accountType === type)
-      .find((user) => user.id === id)
+      .map((user) => new UserResponseDto(user));
   }
 
-  createUser(accountType: AccountType, {pseudo}: User){
+  getUserById(type: AccountType, id: string): UserResponseDto {
+    const user = data.users
+      .filter((users) => users.accountType === type)
+      .find((user) => user.id === id)
+
+    if(!user) return;
+
+    return new UserResponseDto(user);
+  }
+
+  createUser(accountType: AccountType, {pseudo}: User): UserResponseDto {
     const newUser = {
       id: uuid(),
       pseudo,
@@ -35,10 +42,10 @@ export class UserService {
     };
 
     data.users.push(newUser);
-    return newUser;
+    return new UserResponseDto(newUser);
   }
 
-  updateUser(accountType: AccountType, id: string, body: UpdateUser){
+  updateUser(accountType: AccountType, id: string, body: UpdateUser): UserResponseDto {
     const userToUpdate = data.users
       .filter((users) => users.accountType === accountType)
       .find((user) => user.id === id)
@@ -52,8 +59,8 @@ export class UserService {
       updated_at: new Date()
     };
 
-    return data.users[userIndex];
-  }
+    return new UserResponseDto(data.users[userIndex]);
+   }
 
   deleteUser(id: string){
     const userIndex = data.users.findIndex((user) => user.id === id)
