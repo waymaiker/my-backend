@@ -1,8 +1,7 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, ParseEnumPipe, ParseUUIDPipe, Post, Put } from '@nestjs/common';
 
-import { AccountType } from 'src/data';
 import { UserService } from './user.service';
-import { CreateUserDto, UpdateUserDto, UserResponseDto } from 'src/dtos/user.dto';
+import { AccountType, CreateUserDto, UpdateUserDto, UserResponseDto } from 'src/dtos/user.dto';
 
 @Controller('users/:accountType')
 export class UserController {

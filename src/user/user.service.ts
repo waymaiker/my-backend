@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { v4 as uuid } from 'uuid';
 
-import { AccountType, data } from "src/data";
-import { UserResponseDto } from "src/dtos/user.dto";
+import { data } from "src/data";
+import { AccountType, UserResponseDto } from "src/dtos/user.dto";
 
 interface User {
   pseudo: string,
