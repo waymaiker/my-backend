@@ -2,10 +2,11 @@ import { Injectable } from "@nestjs/common";
 import { v4 as uuid } from 'uuid';
 
 import { data } from "src/data";
-import { AccountType, UserResponseDto } from "src/dtos/user.dto";
+import { Language, ProfileType, UserResponseDto } from "src/dtos/user.dto";
 
 interface User {
   pseudo: string,
+  profile_language: Language
 }
 
 interface UpdateUser {
@@ -15,15 +16,15 @@ interface UpdateUser {
 
 @Injectable()
 export class UserService {
-  getUsers(type: AccountType): UserResponseDto[] {
+  getUsers(type: ProfileType): UserResponseDto[] {
     return data.users
-      .filter((users) => users.accountType === type)
+      .filter((users) => users.profile_type === type)
       .map((user) => new UserResponseDto(user));
   }
 
-  getUserById(type: AccountType, id: string): UserResponseDto {
+  getUserById(type: ProfileType, id: string): UserResponseDto {
     const user = data.users
-      .filter((users) => users.accountType === type)
+      .filter((users) => users.profile_type === type)
       .find((user) => user.id === id)
 
     if(!user) return;
@@ -31,23 +32,25 @@ export class UserService {
     return new UserResponseDto(user);
   }
 
-  createUser(accountType: AccountType, {pseudo}: User): UserResponseDto {
+  createUser(profile_type: ProfileType, {pseudo, profile_language}: User): UserResponseDto {
     const newUser = {
       id: uuid(),
       pseudo,
       level: 0,
+      profile_language,
+      profile_type,
+      finished_level: 0,
       created_at: new Date(),
       updated_at: new Date(),
-      accountType
     };
 
     data.users.push(newUser);
     return new UserResponseDto(newUser);
   }
 
-  updateUser(accountType: AccountType, id: string, body: UpdateUser): UserResponseDto {
+  updateUser(profile_type: ProfileType, id: string, body: UpdateUser): UserResponseDto {
     const userToUpdate = data.users
-      .filter((users) => users.accountType === accountType)
+      .filter((users) => users.profile_type === profile_type)
       .find((user) => user.id === id)
 
     if(!userToUpdate) return;

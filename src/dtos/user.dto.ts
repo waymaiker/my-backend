@@ -1,7 +1,13 @@
 import { Exclude, Expose } from "class-transformer";
-import { IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString } from "class-validator";
 
-export enum AccountType {
+export enum Language {
+  FRENCH = 'french',
+  ENGLISH = 'english',
+  WOLOF = 'wolof'
+}
+
+export enum ProfileType {
   PREMIUM = 'premium',
   FREEMIUM = 'freemium'
 }
@@ -17,24 +23,18 @@ export class UpdateUserDto {
   @IsNotEmpty()
   @IsOptional()
   pseudo: string;
-
-  @IsNumber()
-  @IsPositive()
-  @IsOptional()
-  level: number;
 }
 
 export class UserResponseDto {
   id: string;
   pseudo: string;
-  level: number;
 
   @Exclude()
   created_at: Date;
 
   @Exclude()
   updated_at: Date;
-  accountType: AccountType;
+  accountType: ProfileType;
 
   @Expose({ name: 'createdAt' })
   transformCreatedAt(){
