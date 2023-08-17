@@ -38,7 +38,7 @@ export class UserService {
     return newUser;
   }
 
-  updateUser(accountType: AccountType, id: string, {pseudo, level}: UpdateUser){
+  updateUser(accountType: AccountType, id: string, body: UpdateUser){
     const userToUpdate = data.users
       .filter((users) => users.accountType === accountType)
       .find((user) => user.id === id)
@@ -48,8 +48,7 @@ export class UserService {
     const userIndex = data.users.findIndex((user) => user.id === id)
     data.users[userIndex] = {
       ...data.users[userIndex],
-      pseudo,
-      level,
+      ...body,
       updated_at: new Date()
     };
 
