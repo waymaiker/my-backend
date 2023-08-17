@@ -1,4 +1,15 @@
-interface Users {
+import { ChapterType } from "./dtos/chapter.dto";
+import { AccountType } from "./dtos/user.dto";
+
+export interface Data {
+  chapters: {
+    id: string,
+    name: string,
+    level: number,
+    created_at: Date,
+    updated_at: Date,
+    type: ChapterType
+  }[],
   users: {
     id: string,
     pseudo: string,
@@ -9,12 +20,15 @@ interface Users {
   }[]
 }
 
-export enum AccountType {
-  PREMIUM = 'premium',
-  FREEMIUM = 'freemium'
-}
-
-export const data:Users = {
+export const data:Data = {
+  chapters: [{
+    id: '0',
+    name: 'introduction',
+    level: 5,
+    created_at: new Date(),
+    updated_at: new Date(),
+    type: ChapterType.FREEMIUM
+  }],
   users: [{
     id: "834e0b68-6926-4329-b346-3e6e61613b94",
     pseudo: 'PREMIUM',
