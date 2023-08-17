@@ -14,9 +14,10 @@ import { ExerciseController } from './exercise/exercise.controller';
 import { AppService } from './app.service';
 import { UserService } from 'src/user/user.service';
 import { ExerciseService } from './exercise/exercise.service';
+import { ChapterModule } from './chapter/chapter.module';
 
 @Module({
-  imports: [UserModule, ExerciseModule],
+  imports: [UserModule, ExerciseModule, ChapterModule],
   controllers: [AppController, UserController, ExerciseController],
   providers: [AppService, UserService, {
     provide: APP_INTERCEPTOR,
