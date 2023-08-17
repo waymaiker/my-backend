@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, ParseEnumPipe, ParseIntPipe, ParseUUIDPipe, Post, Put } from '@nestjs/common';
 
 import { AccountType, data } from 'src/data';
 import { UserService } from './user.service';
@@ -11,15 +11,15 @@ export class UserController {
   ){}
 
   @Get()
-  getUsers(@Param('accountType') accountType: string) {
+  getUsers(@Param('accountType',  new ParseEnumPipe(AccountType)) accountType: string) {
     const userAccountType = accountType === 'freemium' ? AccountType.FREEMIUM : AccountType.PREMIUM;
     return this.userService.getUsers(userAccountType);
   }
 
   @Get(':id')
   getUserById(
-    @Param('accountType') accountType: string,
-    @Param('id') id: string
+    @Param('accountType', new ParseEnumPipe(AccountType)) accountType: string,
+    @Param('id', ParseUUIDPipe) id: string
   ){
     const userAccountType = accountType === 'freemium' ? AccountType.FREEMIUM : AccountType.PREMIUM;
     return this.userService.getUserById(userAccountType, id);
@@ -27,7 +27,7 @@ export class UserController {
 
   @Post()
   createUser(
-    @Param('accountType') accountType: string,
+    @Param('accountType',  new ParseEnumPipe(AccountType)) accountType: string,
     @Body() {pseudo}: {
       pseudo: string,
     }
@@ -38,8 +38,8 @@ export class UserController {
 
   @Put(':id')
   updateUser(
-    @Param('accountType') accountType: string,
-    @Param('id') id: string,
+    @Param('accountType',  new ParseEnumPipe(AccountType)) accountType: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() {pseudo}: {
       pseudo: string,
     },
@@ -50,7 +50,7 @@ export class UserController {
 
   @HttpCode(204)
   @Delete(':id')
-  deleteUser(@Param('id') id: string){
+  deleteUser(@Param('id', ParseUUIDPipe) id: string){
     return this.userService.deleteUser(id);
   }
 }
