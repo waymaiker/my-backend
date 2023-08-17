@@ -7,6 +7,11 @@ interface User {
   pseudo: string,
 }
 
+interface UpdateUser {
+  pseudo?: string,
+  level?: number
+}
+
 @Injectable()
 export class UserService {
   getUsers(type: AccountType){
@@ -23,6 +28,7 @@ export class UserService {
     const newUser = {
       id: uuid(),
       pseudo,
+      level: 0,
       created_at: new Date(),
       updated_at: new Date(),
       accountType
@@ -32,7 +38,7 @@ export class UserService {
     return newUser;
   }
 
-  updateUser(accountType: AccountType, id: string, {pseudo}: User){
+  updateUser(accountType: AccountType, id: string, {pseudo, level}: UpdateUser){
     const userToUpdate = data.users
       .filter((users) => users.accountType === accountType)
       .find((user) => user.id === id)
@@ -43,6 +49,7 @@ export class UserService {
     data.users[userIndex] = {
       ...data.users[userIndex],
       pseudo,
+      level,
       updated_at: new Date()
     };
 

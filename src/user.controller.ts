@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, ParseEnumPipe, ParseIntPipe, ParseUUIDPipe, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, ParseEnumPipe, ParseUUIDPipe, Post, Put } from '@nestjs/common';
 
-import { AccountType, data } from 'src/data';
+import { AccountType } from 'src/data';
 import { UserService } from './user.service';
+import { CreateUserDto, UpdateUserDto } from './dtos/user.dto';
 
 @Controller('users/:accountType')
 export class UserController {
@@ -28,9 +29,7 @@ export class UserController {
   @Post()
   createUser(
     @Param('accountType',  new ParseEnumPipe(AccountType)) accountType: string,
-    @Body() {pseudo}: {
-      pseudo: string,
-    }
+    @Body() {pseudo}: CreateUserDto
   ){
     const userAccountType = accountType === 'freemium' ? AccountType.FREEMIUM : AccountType.PREMIUM;
     return this.userService.createUser(userAccountType, {pseudo});
@@ -40,12 +39,10 @@ export class UserController {
   updateUser(
     @Param('accountType',  new ParseEnumPipe(AccountType)) accountType: string,
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() {pseudo}: {
-      pseudo: string,
-    },
+    @Body() body: UpdateUserDto,
   ){
     const userAccountType = accountType === 'freemium' ? AccountType.FREEMIUM : AccountType.PREMIUM;
-    return this.userService.updateUser(userAccountType, id, {pseudo});
+    return this.userService.updateUser(userAccountType, id, body);
   }
 
   @HttpCode(204)
