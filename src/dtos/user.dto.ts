@@ -1,21 +1,16 @@
 import { Exclude, Expose } from "class-transformer";
-import { IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString } from "class-validator";
+import { Language, Subscription } from "./shared/types";
 
-export enum Language {
-  FRENCH = 'french',
-  ENGLISH = 'english',
-  WOLOF = 'wolof'
-}
-
-export enum ProfileType {
-  PREMIUM = 'premium',
-  FREEMIUM = 'freemium'
-}
 
 export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   pseudo: string;
+
+  @IsString()
+  @IsNotEmpty()
+  profile_language: Language;
 }
 
 export class UpdateUserDto {
@@ -23,18 +18,49 @@ export class UpdateUserDto {
   @IsNotEmpty()
   @IsOptional()
   pseudo: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  profile_language: Language;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  scope: Subscription;
+
+  @IsNumber()
+  @IsPositive()
+  @IsOptional()
+  finished_level: number;
 }
 
 export class UserResponseDto {
   id: string;
   pseudo: string;
+  scope: Subscription;
+
+  @Exclude()
+  profile_language: Language;
+
+  @Exclude()
+  finished_level: number;
 
   @Exclude()
   created_at: Date;
 
   @Exclude()
   updated_at: Date;
-  accountType: ProfileType;
+
+  @Expose({ name: 'finishedLevel' })
+  transformFinishedLevel(){
+    return this.finished_level;
+  }
+
+  @Expose({ name: 'profileLanguage' })
+  transformProfileLanguage(){
+    return this.profile_language;
+  }
 
   @Expose({ name: 'createdAt' })
   transformCreatedAt(){

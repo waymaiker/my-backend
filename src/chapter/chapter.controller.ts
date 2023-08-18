@@ -1,9 +1,10 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
 
 import { ChapterService } from './chapter.service';
-import { CreateChapterDto, UpdateChapterDto, ChapterResponseDto, ChapterType } from 'src/dtos/chapter.dto';
+import { CreateChapterDto, UpdateChapterDto, ChapterResponseDto } from 'src/dtos/chapter.dto';
+import { Subscription } from 'src/dtos/shared/types';
 
-@Controller('chapters/:type')
+@Controller('chapters/:scope')
 export class ChapterController {
 
   constructor(
@@ -12,37 +13,37 @@ export class ChapterController {
 
   @Get()
   getChapters(
-    @Param('type') type: string
+    @Param('scope') scope: string
   ): ChapterResponseDto[] {
-    const chapterType = type === 'freemium' ? ChapterType.FREEMIUM : ChapterType.PREMIUM;
+    const chapterType = scope === 'freemium' ? Subscription.FREEMIUM : Subscription.PREMIUM;
     return this.chapterService.getChapters(chapterType);
   }
 
   @Get(':id')
   getChapterById(
-    @Param('type') type: string,
+    @Param('scope') scope: string,
     @Param('id', ParseIntPipe) id: number
   ): ChapterResponseDto {
-    const chapterType = type === 'freemium' ? ChapterType.FREEMIUM : ChapterType.PREMIUM;
+    const chapterType = scope === 'freemium' ? Subscription.FREEMIUM : Subscription.PREMIUM;
     return this.chapterService.getChapterById(chapterType, id);
   }
 
   @Post()
   createChapter(
-    @Param('type') type: string,
+    @Param('scope') scope: string,
     @Body() body: CreateChapterDto
   ): ChapterResponseDto {
-    const chapterType = type === 'freemium' ? ChapterType.FREEMIUM : ChapterType.PREMIUM;
+    const chapterType = scope === 'freemium' ? Subscription.FREEMIUM : Subscription.PREMIUM;
     return this.chapterService.createChapter(chapterType, body);
   }
 
   @Put(':id')
   updateChapter(
-    @Param('type') type: string,
+    @Param('scope') scope: string,
     @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdateChapterDto,
   ): ChapterResponseDto {
-    const chapterType = type === 'freemium' ? ChapterType.FREEMIUM : ChapterType.PREMIUM;
+    const chapterType = scope === 'freemium' ? Subscription.FREEMIUM : Subscription.PREMIUM;
     return this.chapterService.updateChapter(chapterType, id, body);
   }
 

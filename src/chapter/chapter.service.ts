@@ -1,31 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { v4 as uuid } from 'uuid';
 
 import { data } from 'src/data';
-import { ChapterResponseDto, ChapterType } from 'src/dtos/chapter.dto';
+import { ChapterResponseDto } from 'src/dtos/chapter.dto';
+import { Subscription } from 'src/dtos/shared/types';
 
 interface Chapter {
   name: string,
-  max_level: number
+  max_level: number,
+  exercises: number[]
 }
 
 interface UpdateChapter {
   name?: string,
-  max_level?: number
+  max_level?: number,
+  exercises?: number[]
 }
-
 
 @Injectable()
 export class ChapterService {
-  getChapters(type: ChapterType): ChapterResponseDto[] {
+  getChapters(scope: Subscription): ChapterResponseDto[] {
     return data.chapters
-      .filter((chapter) => chapter.type === type)
+      .filter((chapter) => chapter.scope === scope)
       .map((chapter) => new ChapterResponseDto(chapter));
   }
 
-  getChapterById(type: ChapterType, id: number): ChapterResponseDto {
+  getChapterById(scope: Subscription, id: number): ChapterResponseDto {
     const chapter = data.chapters
-      .filter((chapter) => chapter.type === type)
+      .filter((chapter) => chapter.scope === scope)
       .find((chapter) => chapter.id === id)
 
     if(!chapter) return;
@@ -33,23 +34,24 @@ export class ChapterService {
     return new ChapterResponseDto(chapter);
   }
 
-  createChapter(type: ChapterType, {name, max_level}: Chapter): ChapterResponseDto {
+  createChapter(scope: Subscription, {name, max_level, exercises}: Chapter): ChapterResponseDto {
     const newChapter = {
       id: data.chapters.length.valueOf(),
       name,
       max_level,
+      exercises,
       created_at: new Date(),
       updated_at: new Date(),
-      type
+      scope: scope
     };
 
     data.chapters.push(newChapter);
     return new ChapterResponseDto(newChapter);
   }
 
-  updateChapter(type: ChapterType, id: number, body: UpdateChapter): ChapterResponseDto {
+  updateChapter(scope: Subscription, id: number, body: UpdateChapter): ChapterResponseDto {
     const chapterToUpdate = data.chapters
-      .filter((chapter) => chapter.type === type)
+      .filter((chapter) => chapter.scope === scope)
       .find((chapter) => chapter.id === id)
 
     if(!chapterToUpdate) return;
