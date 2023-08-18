@@ -14,7 +14,6 @@ interface UpdateChapter {
   name?: string,
   max_level?: number,
   exercises?: number[]
-  scope?: Subscription
 }
 
 @Injectable()
