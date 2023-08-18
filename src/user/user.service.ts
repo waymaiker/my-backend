@@ -2,7 +2,8 @@ import { Injectable } from "@nestjs/common";
 import { v4 as uuid } from 'uuid';
 
 import { data } from "src/data";
-import { Language, ProfileType, UserResponseDto } from "src/dtos/user.dto";
+import { UserResponseDto } from "src/dtos/user.dto";
+import { Language, Subscription } from "src/dtos/shared/types";
 
 interface User {
   pseudo: string,
@@ -11,20 +12,22 @@ interface User {
 
 interface UpdateUser {
   pseudo?: string,
-  level?: number
+  profile_language?: Language,
+  scope?: Subscription,
+  finished_level?: number,
 }
 
 @Injectable()
 export class UserService {
-  getUsers(type: ProfileType): UserResponseDto[] {
+  getUsers(scope: Subscription): UserResponseDto[] {
     return data.users
-      .filter((users) => users.profile_type === type)
+      .filter((users) => users.scope === scope)
       .map((user) => new UserResponseDto(user));
   }
 
-  getUserById(type: ProfileType, id: string): UserResponseDto {
+  getUserById(scope: Subscription, id: string): UserResponseDto {
     const user = data.users
-      .filter((users) => users.profile_type === type)
+      .filter((users) => users.scope === scope)
       .find((user) => user.id === id)
 
     if(!user) return;
@@ -32,13 +35,12 @@ export class UserService {
     return new UserResponseDto(user);
   }
 
-  createUser(profile_type: ProfileType, {pseudo, profile_language}: User): UserResponseDto {
+  createUser(scope: Subscription, {pseudo, profile_language}: User): UserResponseDto {
     const newUser = {
       id: uuid(),
       pseudo,
-      level: 0,
       profile_language,
-      profile_type,
+      scope,
       finished_level: 0,
       created_at: new Date(),
       updated_at: new Date(),
@@ -48,9 +50,9 @@ export class UserService {
     return new UserResponseDto(newUser);
   }
 
-  updateUser(profile_type: ProfileType, id: string, body: UpdateUser): UserResponseDto {
+  updateUser(scope: Subscription, id: string, body: UpdateUser): UserResponseDto {
     const userToUpdate = data.users
-      .filter((users) => users.profile_type === profile_type)
+      .filter((users) => users.scope === scope)
       .find((user) => user.id === id)
 
     if(!userToUpdate) return;

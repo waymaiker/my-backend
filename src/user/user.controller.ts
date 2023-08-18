@@ -1,9 +1,10 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, ParseEnumPipe, ParseUUIDPipe, Post, Put } from '@nestjs/common';
 
 import { UserService } from './user.service';
-import { AccountType, CreateUserDto, UpdateUserDto, UserResponseDto } from 'src/dtos/user.dto';
+import { CreateUserDto, UpdateUserDto, UserResponseDto } from 'src/dtos/user.dto';
+import { Subscription } from 'src/dtos/shared/types';
 
-@Controller('users/:accountType')
+@Controller('users/:scope')
 export class UserController {
 
   constructor(
@@ -12,38 +13,38 @@ export class UserController {
 
   @Get()
   getUsers(
-    @Param('accountType', new ParseEnumPipe(AccountType)) accountType: string
+    @Param('scope', new ParseEnumPipe(Subscription)) scope: string
   ): UserResponseDto[] {
-    const userAccountType = accountType === 'freemium' ? AccountType.FREEMIUM : AccountType.PREMIUM;
-    return this.userService.getUsers(userAccountType);
+    const userSubscription = scope === 'freemium' ? Subscription.FREEMIUM : Subscription.PREMIUM;
+    return this.userService.getUsers(userSubscription);
   }
 
   @Get(':id')
   getUserById(
-    @Param('accountType', new ParseEnumPipe(AccountType)) accountType: string,
+    @Param('scope', new ParseEnumPipe(Subscription)) scope: string,
     @Param('id', ParseUUIDPipe) id: string
   ): UserResponseDto {
-    const userAccountType = accountType === 'freemium' ? AccountType.FREEMIUM : AccountType.PREMIUM;
-    return this.userService.getUserById(userAccountType, id);
+    const userSubscription = scope === 'freemium' ? Subscription.FREEMIUM : Subscription.PREMIUM;
+    return this.userService.getUserById(userSubscription, id);
   }
 
   @Post()
   createUser(
-    @Param('accountType',  new ParseEnumPipe(AccountType)) accountType: string,
-    @Body() {pseudo}: CreateUserDto
+    @Param('scope',  new ParseEnumPipe(Subscription)) scope: string,
+    @Body() {pseudo, profile_language}: CreateUserDto
   ): UserResponseDto {
-    const userAccountType = accountType === 'freemium' ? AccountType.FREEMIUM : AccountType.PREMIUM;
-    return this.userService.createUser(userAccountType, {pseudo});
+    const userSubscription = scope === 'freemium' ? Subscription.FREEMIUM : Subscription.PREMIUM;
+    return this.userService.createUser(userSubscription, {pseudo, profile_language});
   }
 
   @Put(':id')
   updateUser(
-    @Param('accountType',  new ParseEnumPipe(AccountType)) accountType: string,
+    @Param('scope',  new ParseEnumPipe(Subscription)) scope: string,
     @Param('id', ParseUUIDPipe) id: string,
     @Body() body: UpdateUserDto,
   ): UserResponseDto {
-    const userAccountType = accountType === 'freemium' ? AccountType.FREEMIUM : AccountType.PREMIUM;
-    return this.userService.updateUser(userAccountType, id, body);
+    const userSubscription = scope === 'freemium' ? Subscription.FREEMIUM : Subscription.PREMIUM;
+    return this.userService.updateUser(userSubscription, id, body);
   }
 
   @HttpCode(204)
