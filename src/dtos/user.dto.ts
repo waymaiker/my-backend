@@ -2,7 +2,6 @@ import { Exclude, Expose } from "class-transformer";
 import { IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString } from "class-validator";
 import { Language, Subscription } from "./shared/types";
 
-
 export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
