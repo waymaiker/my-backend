@@ -2,12 +2,21 @@ import { Injectable } from "@nestjs/common";
 import { v4 as uuid } from 'uuid';
 
 import { data } from "src/data";
-import { UserResponseDto } from "src/dtos/user.dto";
+import { UserResponseDto } from "src/user/dtos/user.dto";
 import { Language, Subscription } from "src/dtos/shared/types";
+import { isUserExist } from "./helpers/helpers";
 
-interface User {
+interface AnonymousUser {
   pseudo: string,
-  profile_language: Language
+  profile_language: Language,
+}
+
+export interface AuthenticatedUser {
+  pseudo: string,
+  profile_language: Language,
+  phone: string;
+  email: string;
+  password: string;
 }
 
 interface UpdateUser {
@@ -35,12 +44,39 @@ export class UserService {
     return new UserResponseDto(user);
   }
 
-  createUser(scope: Subscription, {pseudo, profile_language}: User): UserResponseDto {
+  createAnonymousUser(scope: Subscription, {pseudo, profile_language}: AnonymousUser): UserResponseDto {
     const newUser = {
       id: uuid(),
       pseudo,
       profile_language,
       scope,
+      phone: '',
+      email: '',
+      password: '',
+      finished_level: 0,
+      created_at: new Date(),
+      updated_at: new Date(),
+    };
+
+    data.users.push(newUser);
+    return new UserResponseDto(newUser);
+  }
+
+  createAuthenticatedUser(
+    scope: Subscription, {
+      pseudo, phone, email, password, profile_language
+    }: AuthenticatedUser
+  ): UserResponseDto {
+    if(isUserExist(scope, pseudo, email, phone)) return
+
+    const newUser = {
+      id: uuid(),
+      pseudo,
+      profile_language,
+      scope,
+      phone,
+      email,
+      password,
       finished_level: 0,
       created_at: new Date(),
       updated_at: new Date(),
