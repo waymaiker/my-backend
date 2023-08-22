@@ -39,6 +39,7 @@ export class UserService {
       .filter((users) => users.scope === scope)
       .find((user) => user.id === id)
 
+    // TODO: Handle the return response
     if(!user) return;
 
     return new UserResponseDto(user);
@@ -67,6 +68,8 @@ export class UserService {
       pseudo, phone, email, password, profile_language
     }: AuthenticatedUser
   ): UserResponseDto {
+
+    // TO DO: Handle the return response
     if(isUserExist(scope, pseudo, email, phone)) return
 
     const newUser = {
@@ -91,6 +94,7 @@ export class UserService {
       .filter((users) => users.scope === scope)
       .find((user) => user.id === id)
 
+    // TODO: Handle the return response
     if(!userToUpdate) return;
 
     const userIndex = data.users.findIndex((user) => user.id === id)
@@ -106,6 +110,7 @@ export class UserService {
   deleteUser(id: string){
     const userIndex = data.users.findIndex((user) => user.id === id)
 
+    // TODO: Handle the return response
     if(userIndex === -1) return;
 
     data.users.splice(userIndex, 1);
