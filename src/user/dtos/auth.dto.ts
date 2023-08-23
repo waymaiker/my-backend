@@ -10,10 +10,19 @@ export class SignUpDto extends CreateUserDto {
     message: 'phone must be a valid phone number'
   })
   phone: string;
-  
+
   @IsEmail()
   email: string;
-  
+
+  @IsString()
+  @MinLength(8)
+  password: string;
+}
+
+export class SignInDto {
+  @IsEmail()
+  email: string;
+
   @IsString()
   @MinLength(8)
   password: string;
