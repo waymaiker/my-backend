@@ -1,30 +1,57 @@
-import { Injectable } from '@nestjs/common';
+import * as bcrypt from 'bcryptjs';
+import { Language, Prisma, UserType } from '@prisma/client';
+import { ConflictException, Injectable } from '@nestjs/common';
 
-import { data } from 'src/data';
-import { Subscription } from 'src/dtos/shared/types';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { AuthenticatedUser } from '../user.service';
+
+// import { Subscription } from 'src/dtos/shared/types';
 import { SignUpResponseDto } from '../dtos/auth.dto';
-import { AuthenticatedUser, UserService } from '../user.service';
+// import { data } from 'src/data';
+
 
 @Injectable()
 export class AuthService {
 
+  constructor(private readonly prismaService: PrismaService){}
+
   // TODO: Handling errors, send an accurate message
-  signup(body: AuthenticatedUser): SignUpResponseDto {
-    const emailAlreadyUsed = data.users
-      .filter((user) => user.email === body.email).shift()
+  async signup(body: AuthenticatedUser){
+    const emailAlreadyUsed = await this.prismaService.user.findUnique({
+      where: {
+        email: body.email
+      }
+    })
 
-    const pseudoAlreadyUsed = data.users
-      .filter((user) => user.pseudo === body.pseudo).shift()
+    if(emailAlreadyUsed){
+      throw new ConflictException("This email is already used")
+    }
 
-    const phoneAlreadyUsed = data.users
-      .filter((user) => user.phone === body.phone).shift()
+    const pseudoAlreadyUsed = await this.prismaService.user.findUnique({
+      where: {
+        pseudo: body.pseudo
+      }
+    })
 
-    if(pseudoAlreadyUsed) return;
-    if(phoneAlreadyUsed) return;
-    if(emailAlreadyUsed) return;
+    if(pseudoAlreadyUsed){
+      throw new ConflictException("This pseudo is already used")
+    }
 
-    const userCreated = new UserService().createAuthenticatedUser(Subscription.FREEMIUM, body);
+    const hashedPassword = await bcrypt.hash(body.password, 10);
+    let dataToCreateUser: Prisma.UserCreateInput = {
+      email: body.email,
+      phone: body.phone,
+      password: hashedPassword,
+      profile_language: Language.ENGLISH,
+      pseudo: body.pseudo,
+      finished_level: 0,
+      scope: "FREEMIUM",
+      user_type: UserType.USER
+    };
 
-    return new SignUpResponseDto(userCreated);
+    const user = await this.prismaService.user.create({data: dataToCreateUser})
+
+    //new SignUpResponseDto(user)
+    return user;
   }
 }
