@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, ParseEnumPipe, ParseUUIDPipe, Post, Put } from '@nestjs/common';
 
 import { UserService } from './user.service';
-import { CreateUserDto, UpdateUserDto, UserResponseDto } from 'src/dtos/user.dto';
+import { CreateUserDto, UpdateUserDto, UserResponseDto } from 'src/user/dtos/user.dto';
 import { Subscription } from 'src/dtos/shared/types';
 
 @Controller('users/:scope')
@@ -31,10 +31,10 @@ export class UserController {
   @Post()
   createUser(
     @Param('scope',  new ParseEnumPipe(Subscription)) scope: string,
-    @Body() {pseudo, profile_language}: CreateUserDto
+    @Body() body: CreateUserDto
   ): UserResponseDto {
     const userSubscription = scope === 'freemium' ? Subscription.FREEMIUM : Subscription.PREMIUM;
-    return this.userService.createUser(userSubscription, {pseudo, profile_language});
+    return this.userService.createAnonymousUser(userSubscription, body);
   }
 
   @Put(':id')

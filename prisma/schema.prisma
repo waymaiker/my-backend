@@ -28,8 +28,9 @@ enum UserType {
 }
 model User {
   id                    String @id @default(uuid())
-  pseudo                String
-  email                 String
+  pseudo                String @unique
+  phone                 String
+  email                 String @unique
   password              String
   profile_language      Language
   finished_level        Int
