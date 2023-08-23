@@ -1,21 +1,16 @@
 import * as bcrypt from 'bcryptjs';
+import * as jwt from 'jsonwebtoken';
 import { Language, Prisma, UserType } from '@prisma/client';
 import { ConflictException, Injectable } from '@nestjs/common';
 
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthenticatedUser } from '../user.service';
 
-// import { Subscription } from 'src/dtos/shared/types';
-import { SignUpResponseDto } from '../dtos/auth.dto';
-// import { data } from 'src/data';
-
-
 @Injectable()
 export class AuthService {
 
   constructor(private readonly prismaService: PrismaService){}
 
-  // TODO: Handling errors, send an accurate message
   async signup(body: AuthenticatedUser){
     const emailAlreadyUsed = await this.prismaService.user.findUnique({
       where: {
@@ -50,8 +45,11 @@ export class AuthService {
     };
 
     const user = await this.prismaService.user.create({data: dataToCreateUser})
+    const token = await jwt.sign({
+      name: user.pseudo,
+      id: user.id
+    }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
 
-    //new SignUpResponseDto(user)
-    return user;
+    return token;
   }
 }

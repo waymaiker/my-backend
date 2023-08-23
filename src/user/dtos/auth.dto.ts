@@ -1,5 +1,5 @@
 import { IsEmail, IsNotEmpty, IsString, Matches, MinLength } from "class-validator";
-import { CreateUserDto, UserResponseDto } from "./user.dto";
+import { CreateUserDto } from "./user.dto";
 
 export class SignUpDto extends CreateUserDto {
   @IsString()
@@ -18,5 +18,3 @@ export class SignUpDto extends CreateUserDto {
   @MinLength(8)
   password: string;
 }
-
-export class SignUpResponseDto extends UserResponseDto {}
