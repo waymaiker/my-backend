@@ -16,7 +16,7 @@ export class AuthService {
 
   constructor(private readonly prismaService: PrismaService){}
 
-  async signup(body: AuthenticatedUser){
+  async signup(body: AuthenticatedUser, userType: UserType){
     const emailAlreadyUsed = await this.prismaService.user.findUnique({
       where: {
         email: body.email
@@ -46,7 +46,7 @@ export class AuthService {
       pseudo: body.pseudo,
       finished_level: 0,
       scope: "FREEMIUM",
-      user_type: UserType.USER
+      user_type: userType
     };
 
     const user = await this.prismaService.user.create({data: dataToCreateUser})
@@ -76,5 +76,10 @@ export class AuthService {
 
   private generateJWT(name: string, id: string){
     return jwt.sign({ name, id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
+  }
+
+  generateProductKey(email: string, userType: UserType){
+    const string =  `${email}-${userType}-${process.env.PRODUCT_KEY_SECRET}`;
+    return bcrypt.hash(string, 10);
   }
 }
