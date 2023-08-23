@@ -4,7 +4,6 @@ import { v4 as uuid } from 'uuid';
 import { data } from "src/data";
 import { UserResponseDto } from "src/user/dtos/user.dto";
 import { Language, Subscription } from "src/dtos/shared/types";
-import { isUserExist } from "./helpers/helpers";
 
 interface AnonymousUser {
   pseudo: string,
@@ -68,9 +67,6 @@ export class UserService {
       pseudo, phone, email, password, profile_language
     }: AuthenticatedUser
   ): UserResponseDto {
-
-    // TO DO: Handle the return response
-    if(isUserExist(scope, pseudo, email, phone)) return
 
     const newUser = {
       id: uuid(),
