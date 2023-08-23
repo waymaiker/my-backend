@@ -23,8 +23,6 @@ export class AuthController {
       const validProductKey = `${body.email}-${userType}-${process.env.PRODUCT_KEY_SECRET}`;
       const isValidProductKey = await bcrypt.compare(validProductKey, body.productKey);
 
-      console.log(isValidProductKey);
-
       if(!isValidProductKey) {
         throw new UnauthorizedException()
       }
