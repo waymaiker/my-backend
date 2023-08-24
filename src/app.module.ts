@@ -16,9 +16,10 @@ import { UserService } from 'src/user/user.service';
 import { ExerciseService } from './exercise/exercise.service';
 import { ChapterModule } from './chapter/chapter.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { GroupModule } from './group/group.module';
 
 @Module({
-  imports: [UserModule, ExerciseModule, ChapterModule, PrismaModule],
+  imports: [UserModule, ExerciseModule, ChapterModule, PrismaModule, GroupModule],
   controllers: [AppController, UserController, ExerciseController],
   providers: [AppService, UserService, {
     provide: APP_INTERCEPTOR,

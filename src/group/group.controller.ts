@@ -1,4 +1,5 @@
 import { Controller, Delete, Get, Post, Put } from '@nestjs/common';
+import { GroupResponseDto } from './dto/group.dto';
 import { GroupService } from './group.service';
 
 @Controller('groups')
