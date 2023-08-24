@@ -37,8 +37,15 @@ export class AuthController {
     return this.authService.signin(body);
   }
 
-  @Post("/key")
-  generateProductKey(@Body() { userType, email }: GenerateProductKey){
+  @Post("/key/:type")
+  generateProductKey(
+    @Body() { userType, email }: GenerateProductKey,
+    @Param('type', new ParseEnumPipe(UserType)) type: UserType,
+  ){
+    if(type !== UserType.SUPER_ADMIN){
+      throw new UnauthorizedException()
+    }
+
     return this.authService.generateProductKey(email, userType);
   }
 }
