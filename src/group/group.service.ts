@@ -7,7 +7,7 @@ export class GroupService {
 
   constructor(private readonly prismaService: PrismaService){}
 
-  async getGroups(){
+  async getGroups(): Promise<GroupResponseDto[]>{
     const groups = await this.prismaService.group.findMany({
       select: {
         id: true,

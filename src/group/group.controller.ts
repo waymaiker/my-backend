@@ -8,7 +8,7 @@ export class GroupController {
   constructor(private readonly groupService: GroupService){}
 
   @Get()
-  getGroups(){
+  getGroups(): Promise<GroupResponseDto[]>{
     return this.groupService.getGroups();
   }
 
