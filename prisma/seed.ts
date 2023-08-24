@@ -70,19 +70,19 @@ const groups =[
   {
     name: "Wolof",
     description: "Apprends le wolof en 1 an avec la Wolof academy",
-    isPublic: false,
+    is_public: false,
     restricted_access: true
   },
   {
     name: "Jangalma",
     description: "Des exercices pour t'améliorer en wolof",
-    isPublic: false,
+    is_public: false,
     restricted_access: true
   },
   {
     name: "Dafa neex",
     description: "Une nouvelle expérience pour t'apprendre le wolof",
-    isPublic: false,
+    is_public: false,
     restricted_access: true
   }
 ]
@@ -124,7 +124,8 @@ async function createUser({pseudo, phone, email, password, profile_language, use
 }
 
 async function main() {
-  users.map((user) => createUser(user));
+  //users.map((user) => createUser(user));
+  await prisma.group.createMany({ data: groups })
 }
 
 main()

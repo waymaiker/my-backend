@@ -26,6 +26,7 @@ enum UserType {
   ADMIN
   USER
 }
+
 model User {
   id                    String @id @default(uuid())
   pseudo                String @unique
@@ -38,8 +39,41 @@ model User {
   user_type             UserType
   created_at            DateTime @default(now())
   updated_at            DateTime @default(now())
+  groups                AdminsGroup[]
+  followings            FollowersGroup[]
   chapter_progressions  ChapterProgression[]
   user_messages         Message[] @relation("user_messages")
+}
+
+model Group {
+  id                    Int @id @default(autoincrement())
+  name                  String
+  description           String
+  is_public             Boolean @default(false)
+  restricted_access     Boolean @default(true)
+  admins                AdminsGroup[]
+  followers             FollowersGroup[]
+  created_at            DateTime @default(now())
+  updated_at            DateTime @default(now())
+}
+
+model AdminsGroup {
+  @@id([groupId, userId])
+  group                 Group @relation(fields: [groupId], references: [id])
+  groupId               Int
+  user                  User @relation(fields: [userId], references: [id])
+  userId                String
+  assigned_at           DateTime @default(now())
+  assigned_by           String
+}
+
+model FollowersGroup {
+  @@id([groupId, userId])
+  group                 Group @relation(fields: [groupId], references: [id])
+  groupId               Int
+  user                  User @relation(fields: [userId], references: [id])
+  userId                String
+  created_at            DateTime @default(now())
 }
 
 model Chapter {
