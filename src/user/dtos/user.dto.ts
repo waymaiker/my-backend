@@ -1,6 +1,6 @@
+import { SubscriptionType, Language, UserType } from "@prisma/client";
 import { Exclude, Expose } from "class-transformer";
-import { IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString } from "class-validator";
-import { Language, Subscription } from "../../dtos/shared/types";
+import { IsEmail, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, Matches, MinLength } from "class-validator";
 
 export class CreateUserDto {
   @IsString()
@@ -9,7 +9,30 @@ export class CreateUserDto {
 
   @IsString()
   @IsNotEmpty()
+  @IsEnum(Language)
   profile_language: Language;
+
+  @Matches(/^(\d{4,30})$|^(\(?\d{2,3}\)?[ .-]?)?\d{3,6}[-. ]?\d{3,10}$|^\+?\(?([0-9]{3})\)?[-. ]?([0-9]{2,3})[-. ]?([0-9]{4,6})[-. ]?(\d{3,6})?$|^(\([0-9]{3}\)\s*|[0-9]{3}\-)[0-9]{3}-[0-9]{4}$/, {
+    message: 'phone must be a valid phone number'
+  })
+  phone: string;
+
+  @IsEmail()
+  email: string;
+
+  @IsString()
+  @MinLength(8)
+  password: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsEnum(UserType)
+  user_type: UserType
+
+  @IsString()
+  @IsNotEmpty()
+  @IsEnum(SubscriptionType)
+  scope: SubscriptionType
 }
 
 export class UpdateUserDto {
@@ -26,7 +49,7 @@ export class UpdateUserDto {
   @IsString()
   @IsNotEmpty()
   @IsOptional()
-  scope: Subscription;
+  scope: SubscriptionType;
 
   @IsNumber()
   @IsPositive()
@@ -37,7 +60,10 @@ export class UpdateUserDto {
 export class UserResponseDto {
   id: string;
   pseudo: string;
-  scope: Subscription;
+  scope: SubscriptionType;
+
+  @Exclude()
+  user_type: UserType;
 
   @Exclude()
   profile_language: Language;
@@ -50,6 +76,11 @@ export class UserResponseDto {
 
   @Exclude()
   updated_at: Date;
+
+  @Expose({ name: 'userType' })
+  transformUserType(){
+    return this.user_type;
+  }
 
   @Expose({ name: 'finishedLevel' })
   transformFinishedLevel(){

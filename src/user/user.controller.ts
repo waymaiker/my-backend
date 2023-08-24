@@ -2,49 +2,37 @@ import { Body, Controller, Delete, Get, HttpCode, Param, ParseEnumPipe, ParseUUI
 
 import { UserService } from './user.service';
 import { CreateUserDto, UpdateUserDto, UserResponseDto } from 'src/user/dtos/user.dto';
-import { Subscription } from 'src/dtos/shared/types';
+import { SubscriptionType } from '@prisma/client';
 
-@Controller('users/:scope')
+@Controller('users')
 export class UserController {
 
   constructor(
     private readonly userService: UserService
   ){}
 
-  @Get()
-  getUsers(
-    @Param('scope', new ParseEnumPipe(Subscription)) scope: string
-  ): UserResponseDto[] {
-    const userSubscription = scope === 'freemium' ? Subscription.FREEMIUM : Subscription.PREMIUM;
+  @Get(':scope')
+  async getUsers(@Param('scope', new ParseEnumPipe(SubscriptionType)) scope: string): Promise<UserResponseDto[]> {
+    const userSubscription = scope === 'FREEMIUM' ? SubscriptionType.FREEMIUM : SubscriptionType.PREMIUM;
     return this.userService.getUsers(userSubscription);
   }
 
   @Get(':id')
-  getUserById(
-    @Param('scope', new ParseEnumPipe(Subscription)) scope: string,
-    @Param('id', ParseUUIDPipe) id: string
-  ): UserResponseDto {
-    const userSubscription = scope === 'freemium' ? Subscription.FREEMIUM : Subscription.PREMIUM;
-    return this.userService.getUserById(userSubscription, id);
+  getUserById(@Param('id', ParseUUIDPipe) id: string){
+    return this.userService.getUserById(id);
   }
 
   @Post()
-  createUser(
-    @Param('scope',  new ParseEnumPipe(Subscription)) scope: string,
-    @Body() body: CreateUserDto
-  ): UserResponseDto {
-    const userSubscription = scope === 'freemium' ? Subscription.FREEMIUM : Subscription.PREMIUM;
-    return this.userService.createAnonymousUser(userSubscription, body);
+  createUser(@Body() body: CreateUserDto){
+    return this.userService.createUser(body);
   }
 
   @Put(':id')
-  updateUser(
-    @Param('scope',  new ParseEnumPipe(Subscription)) scope: string,
+  updateUserById(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() body: UpdateUserDto,
-  ): UserResponseDto {
-    const userSubscription = scope === 'freemium' ? Subscription.FREEMIUM : Subscription.PREMIUM;
-    return this.userService.updateUser(userSubscription, id, body);
+  ) {
+    return this.userService.updateUserById(id, body);
   }
 
   @HttpCode(204)
