@@ -75,18 +75,18 @@ export class GroupService {
     })
 
     if(followers){
-      const assignGroupIdTofollowers = followers.map(follower => {
+      const assignGroupIdOfFollowers = followers.map(follower => {
         return {user_id: follower.user_id, group_id: group.id} }
       );
 
-      await this.prismaService.followersGroup.createMany({ data: assignGroupIdTofollowers })
+      await this.prismaService.followersGroup.createMany({ data: assignGroupIdOfFollowers })
     }
 
     if(admins){
-      const assignGroupIdToAdmins = admins.map(admin => {
+      const assignGroupIdOfAdmins = admins.map(admin => {
         return {user_id: admin.user_id, group_id: group.id, assigned_by: admin.user_id} }
       );
-      await this.prismaService.adminsGroup.createMany({ data: assignGroupIdToAdmins })
+      await this.prismaService.adminsGroup.createMany({ data: assignGroupIdOfAdmins })
     }
 
     return this.getGroupById({id: group.id});

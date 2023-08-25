@@ -66,7 +66,7 @@ const users = [{
   user_type: UserType.USER
 }]
 
-const groupsAdmins: Prisma.AdminsGroupCreateManyInput[] = [
+const groupsAdmins = [
   {
     group_id: 21,
     user_id: "1f3c0731-5945-4c83-9d30-132590f27c6a",
@@ -99,7 +99,7 @@ const groupsAdmins: Prisma.AdminsGroupCreateManyInput[] = [
   },
 ];
 
-const groupsFollowers: Prisma.FollowersGroupCreateManyInput[] = [
+const groupsFollowers = [
   {
     group_id: 21,
     user_id: "1f3c0731-5945-4c83-9d30-132590f27c6a",
@@ -197,9 +197,29 @@ async function createUser({pseudo, phone, email, password, profile_language, use
 
 async function main() {
   //await users.map((user) => createUser(user));
-  //await prisma.group.createMany({ data: groups });
-  await prisma.adminsGroup.createMany({ data: groupsAdmins });
-  await prisma.followersGroup.createMany({ data: groupsFollowers });
+  await prisma.group.createMany({ data: groups });
+  relations();
+}
+
+async function relations() {
+  const groupsById = await prisma.group.findMany({
+    select: {
+      id: true
+    },
+    take: 6
+  })
+
+
+  const updateGroupIdOfFollowers = groupsById.map((group, index) => {
+    return {...groupsFollowers[index], group_id: group.id} }
+  );
+
+  const updateGroupIdOfAdmins = groupsById.map((group, index) => {
+    return {...groupsAdmins[index], group_id: group.id } }
+  );
+
+  await prisma.adminsGroup.createMany({ data: updateGroupIdOfAdmins });
+  await prisma.followersGroup.createMany({ data: updateGroupIdOfFollowers });
 }
 
 main()
