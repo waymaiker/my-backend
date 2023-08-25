@@ -1,15 +1,15 @@
 import { Exclude, Expose } from "class-transformer"
 
-class UserAdminDto {
-  groupId?: number
-  userId: string
+class AdminsDto {
+  group_id?: number
+  user_id: string
   assigned_at?: Date
   assigned_by?: string
 }
 
-class Followers {
-  groupId?: number
-  userId: string
+class FollowersDto {
+  group_id?: number
+  user_id: string
   created_at?: Date
 }
 
@@ -18,9 +18,9 @@ export class GroupResponseDto {
   name: string;
   description: string;
 
-  admins: UserAdminDto[]
+  admins: AdminsDto[]
 
-  followers: Followers[]
+  followers: FollowersDto[]
 
   @Exclude()
   is_public: boolean;

@@ -1,37 +1,38 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GroupResponseDto } from './dto/group.dto';
+
+interface GetGroupsParams {
+  name?: string
+  adminId?: string
+  followerId?: string
+  is_public?: boolean
+  restricted_access?: boolean
+}
 
 @Injectable()
 export class GroupService {
 
   constructor(private readonly prismaService: PrismaService){}
 
-  async getGroups(): Promise<GroupResponseDto[]>{
+  async getGroups(filter: GetGroupsParams): Promise<GroupResponseDto[]>{
+
+    const filters: Prisma.GroupWhereInput = {
+      ...filter,
+    };
+
     const groups = await this.prismaService.group.findMany({
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        is_public: true,
-        restricted_access: true,
-        followers: {
-          select: {
-            groupId: false,
-            userId: true,
-            created_at: false
-          }
-        },
-        admins: {
-          select: {
-            groupId: false,
-            userId: true,
-            assigned_at: false,
-            assigned_by: false
-          }
-        }
-      },
+      where: filters,
+      include: {
+        followers: true,
+        admins: true
+      }
     });
+
+    if(!groups.length) {
+      throw new NotFoundException();
+    }
 
     return groups.map((group) => new GroupResponseDto(group))
   }

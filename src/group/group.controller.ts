@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Post, Put } from '@nestjs/common';
+import { Controller, Delete, Get, Post, Put, Query } from '@nestjs/common';
 import { GroupResponseDto } from './dto/group.dto';
 import { GroupService } from './group.service';
 
@@ -8,8 +8,34 @@ export class GroupController {
   constructor(private readonly groupService: GroupService){}
 
   @Get()
-  getGroups(): Promise<GroupResponseDto[]>{
-    return this.groupService.getGroups();
+  getGroups(
+    @Query('name') name?: string,
+    @Query('adminId') adminId?: string,
+    @Query('followerId') followerId?: string,
+    @Query('isPublic') isPublic?: boolean,
+    @Query('restrictedAccess') restrictedAccess?: boolean,
+  ): Promise<GroupResponseDto[]>{
+    const filters = {
+      ...(name && {name}),
+      ...(adminId && {
+        admins: {
+          some: {
+            user_id: adminId
+          }
+        }}
+      ),
+      ...(followerId && {
+        followers: {
+          some: {
+            user_id: followerId
+          }
+        }}
+      ),
+      ...(isPublic && {is_public: isPublic}),
+      ...(restrictedAccess && {restricted_access: restrictedAccess}),
+    }
+
+    return this.groupService.getGroups(filters);
   }
 
   @Get(':id')
@@ -29,6 +55,6 @@ export class GroupController {
 
   @Delete(':id')
   deleteGroup(){
-    
+
   }
 }
