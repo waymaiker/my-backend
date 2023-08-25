@@ -9,9 +9,21 @@ class AdminsDto {
 }
 
 class FollowersDto {
-  group_id?: number;
+  group_id: number;
   user_id: string;
   created_at?: Date;
+}
+
+export class Follower {
+  @IsString()
+  @IsNotEmpty()
+  user_id: string
+}
+
+export class Admin {
+  @IsString()
+  @IsNotEmpty()
+  user_id: string
 }
 
 export class CreateGroupDto {
@@ -25,15 +37,15 @@ export class CreateGroupDto {
 
   @IsArray()
   @ValidateNested({each: true})
-  @Type(() => FollowersDto)
+  @Type(() => Follower)
   @IsOptional()
-  followers: FollowersDto[];
+  followers: Follower[];
 
   @IsArray()
   @ValidateNested({each: true})
-  @Type(() => AdminsDto)
+  @Type(() => Admin)
   @IsOptional()
-  admins: AdminsDto[];
+  admins: Admin[];
 }
 
 export class GroupResponseDto {

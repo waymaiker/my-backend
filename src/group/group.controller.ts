@@ -45,7 +45,7 @@ export class GroupController {
 
   @Post()
   createGroup(@Body() body: CreateGroupDto){
-    return []
+    return this.groupService.createGroup(body);
   }
 
   @Put(':id')
