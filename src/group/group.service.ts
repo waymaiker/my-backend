@@ -4,6 +4,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { GroupResponseDto } from './dto/group.dto';
 
 interface GetGroupsParams {
+  id?: number
   name?: string
   adminId?: string
   followerId?: string
@@ -17,7 +18,6 @@ export class GroupService {
   constructor(private readonly prismaService: PrismaService){}
 
   async getGroups(filter: GetGroupsParams): Promise<GroupResponseDto[]>{
-
     const filters: Prisma.GroupWhereInput = {
       ...filter,
     };
@@ -36,4 +36,15 @@ export class GroupService {
 
     return groups.map((group) => new GroupResponseDto(group))
   }
+
+  async getGroupById({id}: GetGroupsParams){
+    const group = await this.prismaService.group.findUnique({ where: { id } })
+
+    if(!group){
+      throw new NotFoundException()
+    }
+
+    return new GroupResponseDto(group);
+  }
+
 }

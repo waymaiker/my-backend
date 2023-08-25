@@ -1,16 +1,39 @@
-import { Exclude, Expose } from "class-transformer"
+import { Exclude, Expose, Type } from "class-transformer"
+import { IsArray, IsNotEmpty, IsOptional, IsString, ValidateNested } from "class-validator";
 
 class AdminsDto {
-  group_id?: number
-  user_id: string
-  assigned_at?: Date
-  assigned_by?: string
+  group_id?: number;
+  user_id: string;
+  assigned_at?: Date;
+  assigned_by?: string;
 }
 
 class FollowersDto {
-  group_id?: number
-  user_id: string
-  created_at?: Date
+  group_id?: number;
+  user_id: string;
+  created_at?: Date;
+}
+
+export class CreateGroupDto {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @IsString()
+  @IsNotEmpty()
+  description: string;
+
+  @IsArray()
+  @ValidateNested({each: true})
+  @Type(() => FollowersDto)
+  @IsOptional()
+  followers: FollowersDto[];
+
+  @IsArray()
+  @ValidateNested({each: true})
+  @Type(() => AdminsDto)
+  @IsOptional()
+  admins: AdminsDto[];
 }
 
 export class GroupResponseDto {
@@ -18,9 +41,9 @@ export class GroupResponseDto {
   name: string;
   description: string;
 
-  admins: AdminsDto[]
+  admins: AdminsDto[];
 
-  followers: FollowersDto[]
+  followers: FollowersDto[];
 
   @Exclude()
   is_public: boolean;
