@@ -66,7 +66,67 @@ const users = [{
   user_type: UserType.USER
 }]
 
-const groups =[
+const groupsAdmins: Prisma.AdminsGroupCreateManyInput[] = [
+  {
+    group_id: 21,
+    user_id: "1f3c0731-5945-4c83-9d30-132590f27c6a",
+    assigned_by: "BoyTown"
+  },
+  {
+    group_id: 22,
+    user_id: "1f3c0731-5945-4c83-9d30-132590f27c6a",
+    assigned_by: "BoyTown"
+  },
+  {
+    group_id: 23,
+    user_id: "1f3c0731-5945-4c83-9d30-132590f27c6a",
+    assigned_by: "BoyTown"
+  },
+  {
+    group_id: 23,
+    user_id: "653c7602-adae-4bca-b11b-6f3cd341f663",
+    assigned_by: "PREMIUM1"
+  },
+  {
+    group_id: 24,
+    user_id: "1f3c0731-5945-4c83-9d30-132590f27c6a",
+    assigned_by: "BoyTown"
+  },
+  {
+    group_id: 25,
+    user_id: "653c7602-adae-4bca-b11b-6f3cd341f663",
+    assigned_by: "PREMIUM1"
+  },
+];
+
+const groupsFollowers: Prisma.FollowersGroupCreateManyInput[] = [
+  {
+    group_id: 21,
+    user_id: "1f3c0731-5945-4c83-9d30-132590f27c6a",
+  },
+  {
+    group_id: 22,
+    user_id: "1f3c0731-5945-4c83-9d30-132590f27c6a",
+  },
+  {
+    group_id: 23,
+    user_id: "1f3c0731-5945-4c83-9d30-132590f27c6a",
+  },
+  {
+    group_id: 23,
+    user_id: "653c7602-adae-4bca-b11b-6f3cd341f663",
+  },
+  {
+    group_id: 24,
+    user_id: "1f3c0731-5945-4c83-9d30-132590f27c6a",
+  },
+  {
+    group_id: 25,
+    user_id: "653c7602-adae-4bca-b11b-6f3cd341f663",
+  }
+];
+
+const groups = [
   {
     name: "Wolof",
     description: "Apprends le wolof en 1 an avec la Wolof academy",
@@ -84,8 +144,20 @@ const groups =[
     description: "Une nouvelle expérience pour t'apprendre le wolof",
     is_public: false,
     restricted_access: true
+  },
+  {
+    name: "Wolof Academy",
+    description: "Des exercices pour t'améliorer en wolof",
+    is_public: false,
+    restricted_access: true
+  },
+  {
+    name: "Sama cours",
+    description: "Une nouvelle expérience pour t'apprendre le wolof",
+    is_public: false,
+    restricted_access: true
   }
-]
+];
 
 async function createUser({pseudo, phone, email, password, profile_language, user_type, scope}: CreateUserDto){
   const emailAlreadyUsed = await prisma.user.findUnique({
@@ -124,8 +196,10 @@ async function createUser({pseudo, phone, email, password, profile_language, use
 }
 
 async function main() {
-  //users.map((user) => createUser(user));
-  await prisma.group.createMany({ data: groups })
+  //await users.map((user) => createUser(user));
+  //await prisma.group.createMany({ data: groups });
+  await prisma.adminsGroup.createMany({ data: groupsAdmins });
+  await prisma.followersGroup.createMany({ data: groupsFollowers });
 }
 
 main()
