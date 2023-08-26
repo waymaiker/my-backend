@@ -1,5 +1,5 @@
 import { Exclude, Expose, Type } from "class-transformer"
-import { IsArray, IsNotEmpty, IsOptional, IsString, ValidateNested } from "class-validator";
+import { IsArray, IsBoolean, IsNotEmpty, IsOptional, IsString, ValidateNested } from "class-validator";
 
 class AdminsDto {
   group_id?: number;
@@ -46,6 +46,26 @@ export class CreateGroupDto {
   @Type(() => Admin)
   @IsOptional()
   admins: Admin[];
+}
+
+export class UpdateGroupDto {
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  name: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  description: string;
+
+  @IsBoolean()
+  @IsOptional()
+  is_public: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  restricted_access: boolean;
 }
 
 export class GroupResponseDto {

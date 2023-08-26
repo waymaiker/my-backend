@@ -19,6 +19,11 @@ interface CreateGroupParams {
   admins?: Admin[]
 }
 
+interface UpdateGroupParams {
+  name: string;
+  description: string;
+}
+
 @Injectable()
 export class GroupService {
 
@@ -90,5 +95,20 @@ export class GroupService {
     }
 
     return this.getGroupById({id: group.id});
+  }
+
+  async updateGroupById(id: number, body: UpdateGroupParams) {
+    const group = await this.prismaService.group.findUnique({ where: {id} })
+
+    if(!group){
+      throw new NotFoundException();
+    }
+
+    const updateGroup = await this.prismaService.group.update({
+      where: {id},
+      data: body
+    })
+
+    return new GroupResponseDto(updateGroup);
   }
 }
