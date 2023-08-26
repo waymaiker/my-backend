@@ -111,4 +111,11 @@ export class GroupService {
 
     return new GroupResponseDto(updateGroup);
   }
+
+  async deleteGroupById(id: number) {
+    await this.prismaService.adminsGroup.deleteMany({ where: { group_id: id } })
+    await this.prismaService.followersGroup.deleteMany({ where: { group_id: id } })
+    await this.prismaService.group.delete({ where: {id} })
+  }
+
 }
