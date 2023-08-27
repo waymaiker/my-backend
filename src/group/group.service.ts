@@ -1,6 +1,7 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { UserWhoRequested } from 'src/user/decorators/user.decorator';
 import { Admin, Follower, GroupResponseDto } from './dto/group.dto';
 
 interface GetGroupsParams {
@@ -65,7 +66,7 @@ export class GroupService {
     return new GroupResponseDto(group);
   }
 
-  async createGroup({name, description, followers, admins}: CreateGroupParams){
+  async createGroup({name, description, followers, admins}: CreateGroupParams, user: UserWhoRequested){
     const isGroupExists = await this.prismaService.group.findFirst({ where: { name } });
 
     if(isGroupExists){
@@ -75,7 +76,8 @@ export class GroupService {
     const group = await this.prismaService.group.create({
       data: {
         name,
-        description
+        description,
+        creator_id: user.id
       }
     })
 

@@ -1,4 +1,5 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, ParseIntPipe, Post, Put, Query } from '@nestjs/common';
+import { User } from 'src/user/decorators/user.decorator';
 import { CreateGroupDto, GroupResponseDto, UpdateGroupDto } from './dto/group.dto';
 import { GroupService } from './group.service';
 
@@ -44,8 +45,8 @@ export class GroupController {
   }
 
   @Post()
-  createGroup(@Body() body: CreateGroupDto){
-    return this.groupService.createGroup(body);
+  createGroup(@Body() body: CreateGroupDto, @User() user){
+    return this.groupService.createGroup(body, user.id);
   }
 
   @Put(':id')
