@@ -51,6 +51,7 @@ model Group {
   description           String
   is_public             Boolean @default(false)
   restricted_access     Boolean @default(true)
+  creator_id            String
   admins                AdminsGroup[]
   followers             FollowersGroup[]
   created_at            DateTime @default(now())
