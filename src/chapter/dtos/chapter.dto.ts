@@ -1,6 +1,6 @@
+import { Language, SubscriptionType } from "@prisma/client";
 import { Exclude, Expose } from "class-transformer";
 import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString } from "class-validator";
-import { Language, Subscription } from "./shared/types";
 
 export interface Chapters {
   chapters: {
@@ -11,7 +11,7 @@ export interface Chapters {
     exercises: number[],
     created_at: Date,
     updated_at: Date,
-    scope: Subscription
+    scope: SubscriptionType
   }[]
 }
 
@@ -50,13 +50,13 @@ export class UpdateChapterDto {
   @IsString()
   @IsNotEmpty()
   @IsOptional()
-  scope: Subscription;
+  scope: SubscriptionType;
 }
 
 export class ChapterResponseDto {
   id: number;
   name: string;
-  scope: Subscription;
+  scope: SubscriptionType;
   exercises: number[];
 
   @Exclude()
