@@ -5,6 +5,11 @@ import { UserResponseDto } from "src/user/dtos/user.dto";
 import { PrismaService } from "src/prisma/prisma.service";
 import { SubscriptionType, Language, UserType, Prisma } from "@prisma/client";
 
+interface GetUserParams {
+  scope?: SubscriptionType
+  user_type?: UserType
+}
+
 export interface CreateUser {
   pseudo: string,
   profile_language: Language,
@@ -27,24 +32,25 @@ export class UserService {
 
   constructor(private readonly prismaService: PrismaService){}
 
-  async getUsers(scope: SubscriptionType){
+  async getUsers(filter: GetUserParams): Promise<UserResponseDto[]>{
+    const filters: Prisma.UserWhereInput = {...filter};
     const users = await this.prismaService.user.findMany({
-      where: {
-        scope,
-        user_type: UserType.USER
+      where: filters,
+      include: {
+        followings: true,
+        groups: true
       }
     });
+
+    if(!users.length) {
+      throw new NotFoundException();
+    }
 
     return users.map((user) => new UserResponseDto(user));
   }
 
   async getUserById(id: string){
-    const user = await this.prismaService.user.findUnique({
-      where: {
-        user_type: UserType.USER,
-        id
-      }
-    });
+    const user = await this.prismaService.user.findUnique({ where: { id } });
 
     if(!user){
       throw new NotFoundException();

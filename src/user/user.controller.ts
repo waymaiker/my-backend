@@ -1,20 +1,25 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, ParseEnumPipe, ParseUUIDPipe, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, ParseEnumPipe, ParseUUIDPipe, Post, Put, Query } from '@nestjs/common';
 
 import { UserService } from './user.service';
 import { CreateUserDto, UpdateUserDto, UserResponseDto } from 'src/user/dtos/user.dto';
-import { SubscriptionType } from '@prisma/client';
+import { SubscriptionType, UserType } from '@prisma/client';
 
 @Controller('users')
 export class UserController {
 
-  constructor(
-    private readonly userService: UserService
-  ){}
+  constructor(private readonly userService: UserService){}
 
-  @Get(':scope')
-  async getUsers(@Param('scope', new ParseEnumPipe(SubscriptionType)) scope: string): Promise<UserResponseDto[]> {
-    const userSubscription = scope === 'FREEMIUM' ? SubscriptionType.FREEMIUM : SubscriptionType.PREMIUM;
-    return this.userService.getUsers(userSubscription);
+  @Get()
+  getUsers(
+    @Query('scope') scope?: string,
+    @Query('userType') userType?: string
+  ): Promise<UserResponseDto[]> {
+    const filters = {
+      ...(userType && { user_type: userType === "ADMIN" ? UserType.ADMIN : UserType.USER }),
+      ...(scope && { scope: scope === "FREEMIUM" ? SubscriptionType.FREEMIUM : SubscriptionType.PREMIUM })
+    };
+
+    return this.userService.getUsers(filters);
   }
 
   @Get(':id')

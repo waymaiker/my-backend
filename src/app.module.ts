@@ -1,5 +1,5 @@
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { ClassSerializerInterceptor, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 
 //Module
 import { UserModule } from './user/user.module';
@@ -7,8 +7,6 @@ import { ExerciseModule } from './exercise/exercise.module';
 
 //Controllers
 import { AppController } from './app.controller';
-import { UserController } from 'src/user/user.controller';
-import { ExerciseController } from './exercise/exercise.controller';
 
 //Services
 import { AppService } from './app.service';
@@ -21,7 +19,7 @@ import { UserInterceptor } from './user/interceptors/user.interceptor';
 
 @Module({
   imports: [UserModule, ExerciseModule, ChapterModule, PrismaModule, GroupModule],
-  controllers: [AppController, UserController, ExerciseController],
+  controllers: [AppController],
   providers: [AppService, UserService, {
     provide: APP_INTERCEPTOR,
     useClass: UserInterceptor
