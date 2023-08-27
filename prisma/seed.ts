@@ -66,66 +66,6 @@ const users = [{
   user_type: UserType.USER
 }]
 
-const groupsAdmins = [
-  {
-    group_id: 21,
-    user_id: "1f3c0731-5945-4c83-9d30-132590f27c6a",
-    assigned_by: "BoyTown"
-  },
-  {
-    group_id: 22,
-    user_id: "1f3c0731-5945-4c83-9d30-132590f27c6a",
-    assigned_by: "BoyTown"
-  },
-  {
-    group_id: 23,
-    user_id: "1f3c0731-5945-4c83-9d30-132590f27c6a",
-    assigned_by: "BoyTown"
-  },
-  {
-    group_id: 23,
-    user_id: "653c7602-adae-4bca-b11b-6f3cd341f663",
-    assigned_by: "PREMIUM1"
-  },
-  {
-    group_id: 24,
-    user_id: "1f3c0731-5945-4c83-9d30-132590f27c6a",
-    assigned_by: "BoyTown"
-  },
-  {
-    group_id: 25,
-    user_id: "653c7602-adae-4bca-b11b-6f3cd341f663",
-    assigned_by: "PREMIUM1"
-  },
-];
-
-const groupsFollowers = [
-  {
-    group_id: 21,
-    user_id: "1f3c0731-5945-4c83-9d30-132590f27c6a",
-  },
-  {
-    group_id: 22,
-    user_id: "1f3c0731-5945-4c83-9d30-132590f27c6a",
-  },
-  {
-    group_id: 23,
-    user_id: "1f3c0731-5945-4c83-9d30-132590f27c6a",
-  },
-  {
-    group_id: 23,
-    user_id: "653c7602-adae-4bca-b11b-6f3cd341f663",
-  },
-  {
-    group_id: 24,
-    user_id: "1f3c0731-5945-4c83-9d30-132590f27c6a",
-  },
-  {
-    group_id: 25,
-    user_id: "653c7602-adae-4bca-b11b-6f3cd341f663",
-  }
-];
-
 const groups = [
   {
     creator_id: "653c7602-adae-4bca-b11b-6f3cd341f663",
@@ -201,16 +141,36 @@ async function createUser({pseudo, phone, email, password, profile_language, use
 }
 
 async function main() {
-  //deleteData();
-  //createUsers();
-  createGroups();
+  const usersCount = await prisma.user.count()
+  const groupsCount = await prisma.group.count()
+  const groupsAdmins = await prisma.adminsGroup.count()
+  const groupsFollowers = await prisma.followersGroup.count()
+
+  if(usersCount == 0){
+    createUsers();
+    console.log('\n');
+    console.log(" ---- Users have been created ----");
+  } else if(usersCount>0 && groupsCount == 0){
+    createGroups();
+    console.log('\n');
+    console.log(" ---- Groups have been created ----");
+  } else if(usersCount > 0 && groupsCount > 0 && (groupsAdmins === 0 && groupsFollowers === 0)){
+    createGroupsAdminsAndFollowers()
+    console.log('\n');
+    console.log(" ---- Groups Admins and Followers have been created ----");
+  } else {
+    deleteData()
+    console.log('\n');
+    console.log(" ---- All data have been deleted ----");
+  }
+
 }
 
 async function deleteData(){
-  await prisma.user.deleteMany();
   await prisma.adminsGroup.deleteMany()
   await prisma.followersGroup.deleteMany()
   await prisma.group.deleteMany()
+  await prisma.user.deleteMany();
 }
 
 function createUsers(){
@@ -224,11 +184,6 @@ async function createGroups(){
     }
   });
 
-  await setCreatorGroupAsAnAdmin(myUsers);
-  await createGroupsRelations(myUsers);
-}
-
-async function setCreatorGroupAsAnAdmin(myUsers){
   const assignGroupCreatorId = groups.map((group, index) => {
     return {
       ...group,
@@ -239,7 +194,13 @@ async function setCreatorGroupAsAnAdmin(myUsers){
   await prisma.group.createMany({ data: assignGroupCreatorId });
 }
 
-async function createGroupsRelations(myUsers) {
+async function createGroupsAdminsAndFollowers() {
+  const myUsers = await prisma.user.findMany({
+    where: {
+      user_type: UserType.ADMIN
+    }
+  });
+
   const groupsById = await prisma.group.findMany({
     select: {
       id: true
