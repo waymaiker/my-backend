@@ -9,10 +9,12 @@ import { CreateGroupDto, GroupResponseDto, UpdateGroupDto } from './dto/group.dt
 import { GroupService } from './group.service';
 
 @Controller('groups')
+@UseGuards(AuthGuard)
 export class GroupController {
 
   constructor(private readonly groupService: GroupService){}
 
+  @Roles(UserType.ADMIN, UserType.SUPER_ADMIN)
   @Get()
   getGroups(
     @Query('name') name?: string,
@@ -44,6 +46,7 @@ export class GroupController {
     return this.groupService.getGroups(filters);
   }
 
+  @Roles(UserType.ADMIN, UserType.SUPER_ADMIN)
   @Get(':id')
   getGroupById(@Param('id', ParseIntPipe) id: number){
     return this.groupService.getGroupById({id});
@@ -56,6 +59,7 @@ export class GroupController {
     return this.groupService.createGroup(body, user);
   }
 
+  @Roles(UserType.ADMIN, UserType.SUPER_ADMIN)
   @Put(':id')
   async updateGroup(
     @Param("id", ParseIntPipe) id: number,
@@ -72,6 +76,7 @@ export class GroupController {
     return this.groupService.updateGroupById(id, body);
   }
 
+  @Roles(UserType.ADMIN, UserType.SUPER_ADMIN)
   @HttpCode(204)
   @Delete(':id')
   deleteGroup(

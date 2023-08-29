@@ -1,11 +1,14 @@
 import * as bcrypt from 'bcryptjs';
-import { Body, Controller, Param, ParseEnumPipe, Post, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Param, ParseEnumPipe, Post, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { UserType } from '@prisma/client';
 
 import { GenerateProductKey, SignInDto, SignUpDto } from '../dtos/auth.dto';
 import { AuthService } from './auth.service';
+import { AuthGuard } from './guards/auth.guards';
+import { Roles } from './decorators/roles.decorator';
 
 @Controller('auth')
+@UseGuards(AuthGuard)
 export class AuthController {
 
   constructor(private readonly authService: AuthService){}
@@ -38,15 +41,12 @@ export class AuthController {
     return this.authService.signin(body);
   }
 
+  @Roles(UserType.SUPER_ADMIN)
   @Post("/key/:type")
   generateProductKey(
     @Body() { userType, email }: GenerateProductKey,
     @Param('type', new ParseEnumPipe(UserType)) type: UserType,
   ){
-    if(type !== UserType.SUPER_ADMIN){
-      throw new UnauthorizedException()
-    }
-
     return this.authService.generateProductKey(email, userType);
   }
 }
