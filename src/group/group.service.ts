@@ -133,4 +133,14 @@ export class GroupService {
     await this.prismaService.group.delete({ where: {id} })
   }
 
+  async getCreatorByGroupId(id: number) {
+    const group = await this.prismaService.group.findUnique({ where: { id }});
+
+    if(!group){
+      throw new NotFoundException();
+    }
+
+    return group.creator_id;
+  }
+
 }
