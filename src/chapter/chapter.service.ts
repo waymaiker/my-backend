@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
 import { data } from 'src/data';
-import { ChapterResponseDto } from 'src/dtos/chapter.dto';
-import { Subscription } from 'src/dtos/shared/types';
+import { ChapterResponseDto } from 'src/chapter/dtos/chapter.dto';
+import { SubscriptionType } from '@prisma/client';
 
 interface Chapter {
   name: string,
@@ -18,13 +18,13 @@ interface UpdateChapter {
 
 @Injectable()
 export class ChapterService {
-  getChapters(scope: Subscription): ChapterResponseDto[] {
+  getChapters(scope: SubscriptionType): ChapterResponseDto[] {
     return data.chapters
       .filter((chapter) => chapter.scope === scope)
       .map((chapter) => new ChapterResponseDto(chapter));
   }
 
-  getChapterById(scope: Subscription, id: number): ChapterResponseDto {
+  getChapterById(scope: SubscriptionType, id: number): ChapterResponseDto {
     const chapter = data.chapters
       .filter((chapter) => chapter.scope === scope)
       .find((chapter) => chapter.id === id)
@@ -34,7 +34,7 @@ export class ChapterService {
     return new ChapterResponseDto(chapter);
   }
 
-  createChapter(scope: Subscription, {name, max_level, exercises}: Chapter): ChapterResponseDto {
+  createChapter(scope: SubscriptionType, {name, max_level, exercises}: Chapter): ChapterResponseDto {
     const newChapter = {
       id: data.chapters.length.valueOf(),
       name,
@@ -49,7 +49,7 @@ export class ChapterService {
     return new ChapterResponseDto(newChapter);
   }
 
-  updateChapter(scope: Subscription, id: number, body: UpdateChapter): ChapterResponseDto {
+  updateChapter(scope: SubscriptionType, id: number, body: UpdateChapter): ChapterResponseDto {
     const chapterToUpdate = data.chapters
       .filter((chapter) => chapter.scope === scope)
       .find((chapter) => chapter.id === id)

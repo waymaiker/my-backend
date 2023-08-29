@@ -15,8 +15,8 @@ export class UserController {
     @Query('userType') userType?: string
   ): Promise<UserResponseDto[]> {
     const filters = {
-      ...(userType && { user_type: userType === "ADMIN" ? UserType.ADMIN : UserType.USER }),
-      ...(scope && { scope: scope === "FREEMIUM" ? SubscriptionType.FREEMIUM : SubscriptionType.PREMIUM })
+      ...(userType && { user_type: userType === "admin" ? UserType.ADMIN : UserType.USER }),
+      ...(scope && { scope: scope === "freemium" ? SubscriptionType.FREEMIUM : SubscriptionType.PREMIUM })
     };
 
     return this.userService.getUsers(filters);
