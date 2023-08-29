@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserWhoRequested } from 'src/user/decorators/user.decorator';
@@ -73,6 +73,10 @@ export class GroupService {
       throw new ConflictException("This group name is already used")
     }
 
+    if(!user){
+      throw new UnauthorizedException()
+    }
+
     const group = await this.prismaService.group.create({
       data: {
         name,
@@ -80,6 +84,9 @@ export class GroupService {
         creator_id: user.id
       }
     })
+
+    const assignGroupCreatorAsAnAdmin = {user_id: user.id, group_id: group.id, assigned_by: user.id}
+    await this.prismaService.adminsGroup.create({ data: assignGroupCreatorAsAnAdmin })
 
     if(followers){
       const assignGroupIdOfFollowers = followers.map(follower => {
@@ -115,6 +122,12 @@ export class GroupService {
   }
 
   async deleteGroupById(id: number) {
+    const isGroupExists = await this.prismaService.group.findFirst({ where: { id } });
+
+    if(!isGroupExists){
+      throw new ConflictException("This group id doesnt exist")
+    }
+
     await this.prismaService.adminsGroup.deleteMany({ where: { group_id: id } })
     await this.prismaService.followersGroup.deleteMany({ where: { group_id: id } })
     await this.prismaService.group.delete({ where: {id} })
