@@ -143,4 +143,27 @@ export class GroupService {
     return group.creator_id;
   }
 
+  async getAdminsByGroupId(id: number) {
+    const groupAdmins = await this.prismaService.group.findUnique({
+      where: <Prisma.GroupWhereUniqueInput>  {
+        id,
+        admins: {
+          some: {
+            group_id: id
+          }
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        admins: true
+      }
+    });
+
+    if(!groupAdmins){
+      throw new NotFoundException();
+    }
+
+    return groupAdmins.admins;
+  }
 }
