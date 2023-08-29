@@ -39,6 +39,7 @@ model User {
   user_type             UserType
   created_at            DateTime @default(now())
   updated_at            DateTime @default(now())
+  created_groups        Group []
   groups                AdminsGroup[]
   followings            FollowersGroup[]
   // chapter_progressions  ChapterProgression[]
@@ -52,6 +53,7 @@ model Group {
   is_public             Boolean @default(false)
   restricted_access     Boolean @default(true)
   creator_id            String
+  creator               User @relation(fields: [creator_id], references: [id])
   admins                AdminsGroup[]
   followers             FollowersGroup[]
   created_at            DateTime @default(now())
