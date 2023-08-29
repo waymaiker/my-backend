@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, ParseIntPipe, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, ParseIntPipe, Post, Put, Query, UnauthorizedException } from '@nestjs/common';
 import { User } from 'src/user/decorators/user.decorator';
 import { CreateGroupDto, GroupResponseDto, UpdateGroupDto } from './dto/group.dto';
 import { GroupService } from './group.service';
@@ -59,7 +59,16 @@ export class GroupController {
 
   @HttpCode(204)
   @Delete(':id')
-  deleteGroup(@Param("id", ParseIntPipe) id: number){
+  deleteGroup(
+    @Param("id", ParseIntPipe) id: number,
+    @User() user
+  ){
+    const groupCreatorId = this.groupService.getCreatorByGroupId(id);
+
+    if(groupCreatorId != user.id){
+      throw new UnauthorizedException();
+    }
+
     return this.groupService.deleteGroupById(id);
   }
 }
