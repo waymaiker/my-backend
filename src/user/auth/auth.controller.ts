@@ -15,6 +15,8 @@ export class AuthController {
     @Body() body: SignUpDto,
     @Param('userType', new ParseEnumPipe(UserType)) userType: UserType,
   ){
+
+    body.user_type = userType;
     if(userType !== UserType.USER){
       if(!body.productKey){
         throw new UnauthorizedException()
