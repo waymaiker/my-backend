@@ -53,8 +53,7 @@ export class GroupController {
   @UseGuards(AuthGuard)
   @Post()
   createGroup(@Body() body: CreateGroupDto, @User() user){
-    //return this.groupService.createGroup(body, user);
-    return "Home  created"
+    return this.groupService.createGroup(body, user);
   }
 
   @Put(':id')
