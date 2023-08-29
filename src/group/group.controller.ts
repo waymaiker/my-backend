@@ -50,10 +50,18 @@ export class GroupController {
   }
 
   @Put(':id')
-  updateGroup(
+  async updateGroup(
     @Param("id", ParseIntPipe) id: number,
-    @Body() body: UpdateGroupDto
+    @Body() body: UpdateGroupDto,
+    @User() user
   ){
+    const groupAdmins = await this.groupService.getAdminsByGroupId(id);
+    const userIsAnAdminGroup = groupAdmins.find((admin) => admin.user_id == user.id);
+
+    if(!userIsAnAdminGroup){
+      throw new UnauthorizedException();
+    }
+
     return this.groupService.updateGroupById(id, body);
   }
 
