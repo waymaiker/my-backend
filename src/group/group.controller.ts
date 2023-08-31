@@ -1,9 +1,9 @@
 import { UserType } from '@prisma/client';
 import { Body, Controller, Delete, Get, HttpCode, Param, ParseIntPipe, Post, Put, Query, UnauthorizedException, UseGuards } from '@nestjs/common';
 
-import { AuthGuard } from 'src/user/auth/guards/auth.guards';
-import { Roles } from 'src/user/auth/decorators/roles.decorator';
-import { User } from 'src/user/decorators/user.decorator';
+import { AuthGuard } from 'src/guards/auth.guards';
+import { Roles } from 'src/decorators/roles.decorator';
+import { User } from 'src/decorators/user.decorator';
 
 import { CreateGroupDto, GroupResponseDto, UpdateGroupDto } from './dto/group.dto';
 import { GroupService } from './group.service';
