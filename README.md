@@ -7,6 +7,12 @@ $ npm install
 ## Running the app
 
 ```bash
+# Seeding the database
+$ bash ./seed_script_db.sh seed
+
+# Reset the databse
+$ bash ./seed_script_db.sh reset
+
 # development
 $ npm run start
 

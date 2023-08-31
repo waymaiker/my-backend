@@ -26,6 +26,7 @@ enum UserType {
   ADMIN
   USER
 }
+
 model User {
   id                    String @id @default(uuid())
   pseudo                String @unique
@@ -38,35 +39,71 @@ model User {
   user_type             UserType
   created_at            DateTime @default(now())
   updated_at            DateTime @default(now())
-  chapter_progressions  ChapterProgression[]
-  user_messages         Message[] @relation("user_messages")
+  created_groups        Group []
+  groups                AdminsGroup[]
+  followings            FollowersGroup[]
+  // chapter_progressions  ChapterProgression[]
+  // user_messages         Message[] @relation("user_messages")
 }
 
-model Chapter {
+model Group {
   id                    Int @id @default(autoincrement())
-  name                  String
-  max_level             String
-  exercises             Int[]
-  scope                 SubscriptionType
+  name                  String  @unique
+  description           String
+  is_public             Boolean @default(false)
+  restricted_access     Boolean @default(true)
+  creator_id            String
+  creator               User @relation(fields: [creator_id], references: [id])
+  admins                AdminsGroup[]
+  followers             FollowersGroup[]
   created_at            DateTime @default(now())
   updated_at            DateTime @default(now())
-  chapter_progressions  ChapterProgression[]
 }
 
-model ChapterProgression {
-  id                Int @id @default(autoincrement())
-  chapter_id        Int
-  user_id           String
-  chapter           Chapter @relation(fields: [chapter_id], references: [id])
-  user              User @relation(fields: [user_id], references: [id])
-  created_at        DateTime @default(now())
-  updated_at        DateTime @default(now())
+model AdminsGroup {
+  @@id([group_id, user_id])
+  group                 Group @relation(fields: [group_id], references: [id])
+  group_id              Int
+  user                  User @relation(fields: [user_id], references: [id])
+  user_id               String
+  assigned_at           DateTime @default(now())
+  assigned_by           String
 }
 
-model Message {
-  id                Int @id @default(autoincrement())
-  name              String
-  user_id           String
-  user              User @relation("user_messages", fields: [user_id], references: [id])
-  created_at        DateTime @default(now())
+model FollowersGroup {
+  @@id([group_id, user_id])
+  group                 Group @relation(fields: [group_id], references: [id])
+  group_id              Int
+  user                  User @relation(fields: [user_id], references: [id])
+  user_id               String
+  created_at            DateTime @default(now())
 }
+
+// model Chapter {
+//   id                    Int @id @default(autoincrement())
+//   name                  String
+//   max_level             String
+//   exercises             Int[]
+//   scope                 SubscriptionType
+//   created_at            DateTime @default(now())
+//   updated_at            DateTime @default(now())
+//   chapter_progressions  ChapterProgression[]
+// }
+
+// model ChapterProgression {
+//   id                Int @id @default(autoincrement())
+//   chapter_id        Int
+//   user_id           String
+//   chapter           Chapter @relation(fields: [chapter_id], references: [id])
+//   user              User @relation(fields: [user_id], references: [id])
+//   created_at        DateTime @default(now())
+//   updated_at        DateTime @default(now())
+// }
+
+// model Message {
+//   id                Int @id @default(autoincrement())
+//   name              String
+//   user_id           String
+//   user              User @relation("user_messages", fields: [user_id], references: [id])
+//   created_at        DateTime @default(now())
+// }

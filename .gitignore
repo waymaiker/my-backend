@@ -1,4 +1,5 @@
 .env
+seed_script_variable.txt
 
 # compiled output
 /dist

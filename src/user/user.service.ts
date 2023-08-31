@@ -1,115 +1,147 @@
-import { Injectable } from "@nestjs/common";
-import { v4 as uuid } from 'uuid';
+import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
+import * as bcrypt from 'bcryptjs';
 
-import { data } from "src/data";
 import { UserResponseDto } from "src/user/dtos/user.dto";
-import { Language, Subscription } from "src/dtos/shared/types";
+import { PrismaService } from "src/prisma/prisma.service";
+import { SubscriptionType, Language, UserType, Prisma } from "@prisma/client";
 
-interface AnonymousUser {
-  pseudo: string,
-  profile_language: Language,
+interface GetUserParams {
+  scope?: SubscriptionType
+  user_type?: UserType
 }
 
-export interface AuthenticatedUser {
+export interface CreateUser {
   pseudo: string,
   profile_language: Language,
   phone: string;
   email: string;
   password: string;
+  user_type: UserType,
+  scope: SubscriptionType
 }
 
 interface UpdateUser {
   pseudo?: string,
   profile_language?: Language,
-  scope?: Subscription,
+  scope?: SubscriptionType,
   finished_level?: number,
 }
 
 @Injectable()
 export class UserService {
-  getUsers(scope: Subscription): UserResponseDto[] {
-    return data.users
-      .filter((users) => users.scope === scope)
-      .map((user) => new UserResponseDto(user));
+
+  constructor(private readonly prismaService: PrismaService){}
+
+  async getUsers(filter: GetUserParams): Promise<UserResponseDto[]>{
+    const filters: Prisma.UserWhereInput = {...filter};
+    const users = await this.prismaService.user.findMany({
+      where: filters,
+      include: {
+        followings: true,
+        groups: true
+      }
+    });
+
+    if(!users.length) {
+      throw new NotFoundException();
+    }
+
+    return users.map((user) => new UserResponseDto(user));
   }
 
-  getUserById(scope: Subscription, id: string): UserResponseDto {
-    const user = data.users
-      .filter((users) => users.scope === scope)
-      .find((user) => user.id === id)
+  async getUserById(id: string){
+    const user = await this.prismaService.user.findUnique({ where: { id } });
 
-    // TODO: Handle the return response
-    if(!user) return;
+    if(!user){
+      throw new NotFoundException();
+    };
 
     return new UserResponseDto(user);
   }
 
-  createAnonymousUser(scope: Subscription, {pseudo, profile_language}: AnonymousUser): UserResponseDto {
-    const newUser = {
-      id: uuid(),
-      pseudo,
+  async createUser(
+    {
+      pseudo, phone, email, password, profile_language, user_type, scope
+    }: CreateUser
+  ){
+
+    const emailAlreadyUsed = await this.prismaService.user.findUnique({
+      where: {
+        email: email
+      }
+    })
+
+    if(emailAlreadyUsed){
+      throw new ConflictException("This email is already used")
+    }
+
+    const pseudoAlreadyUsed = await this.prismaService.user.findUnique({
+      where: {
+        pseudo: pseudo
+      }
+    })
+
+    if(pseudoAlreadyUsed){
+      throw new ConflictException("This pseudo is already used");
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    let dataToCreateUser: Prisma.UserCreateInput = {
+      email: email,
+      phone: phone,
+      password: hashedPassword,
       profile_language,
-      scope,
-      phone: '',
-      email: '',
-      password: '',
+      pseudo: pseudo,
       finished_level: 0,
-      created_at: new Date(),
-      updated_at: new Date(),
+      scope,
+      user_type
     };
 
-    data.users.push(newUser);
-    return new UserResponseDto(newUser);
+    const user = await this.prismaService.user.create({data: dataToCreateUser});
+    return new UserResponseDto(user);
   }
 
-  createAuthenticatedUser(
-    scope: Subscription, {
-      pseudo, phone, email, password, profile_language
-    }: AuthenticatedUser
-  ): UserResponseDto {
+  async updateUserById(id: string, body: UpdateUser) {
+    const user = await this.prismaService.user.findUnique({ where: { id } });
 
-    const newUser = {
-      id: uuid(),
-      pseudo,
-      profile_language,
-      scope,
-      phone,
-      email,
-      password,
-      finished_level: 0,
-      created_at: new Date(),
-      updated_at: new Date(),
-    };
+    if(!user){
+      throw new NotFoundException()
+    }
 
-    data.users.push(newUser);
-    return new UserResponseDto(newUser);
-  }
+    const pseudoAlreadyUsed = await this.prismaService.user.findUnique({ where: { pseudo: body.pseudo } })
 
-  updateUser(scope: Subscription, id: string, body: UpdateUser): UserResponseDto {
-    const userToUpdate = data.users
-      .filter((users) => users.scope === scope)
-      .find((user) => user.id === id)
+    if(pseudoAlreadyUsed){
+      throw new ConflictException("This pseudo is already used");
+    }
 
-    // TODO: Handle the return response
-    if(!userToUpdate) return;
-
-    const userIndex = data.users.findIndex((user) => user.id === id)
-    data.users[userIndex] = {
-      ...data.users[userIndex],
+    let dataToUpdateUser: Prisma.UserUpdateInput = {
       ...body,
       updated_at: new Date()
     };
 
-    return new UserResponseDto(data.users[userIndex]);
-   }
+    const updatedUser = await this.prismaService.user.update({
+      data: dataToUpdateUser,
+      where: {id}
+    });
 
-  deleteUser(id: string){
-    const userIndex = data.users.findIndex((user) => user.id === id)
+    return new UserResponseDto(updatedUser);
+  }
 
-    // TODO: Handle the return response
-    if(userIndex === -1) return;
+  async deleteUser(id: string){
+    const user = await this.prismaService.user.findUnique({ where: { id } });
 
-    data.users.splice(userIndex, 1);
-    return;
+    if(!user){
+      throw new NotFoundException()
+    }
+
+    await this.prismaService.user.delete({ where: { id } });
+
+    const users = await this.prismaService.user.findMany({
+      where: {
+        user_type: UserType.USER
+      }
+    });
+
+    return users.map((user) => new UserResponseDto(user));
   }
 }

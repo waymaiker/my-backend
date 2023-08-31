@@ -1,4 +1,4 @@
-import { Subscription, Language } from "./dtos/shared/types";
+import { Language, SubscriptionType } from "@prisma/client";
 
 export interface Data {
   chapters: {
@@ -8,7 +8,7 @@ export interface Data {
     exercises: number[],
     created_at: Date,
     updated_at: Date,
-    scope: Subscription
+    scope: SubscriptionType
   }[],
   users: {
     id: string,
@@ -20,7 +20,7 @@ export interface Data {
     finished_level: number,
     created_at: Date,
     updated_at: Date,
-    scope: Subscription
+    scope: SubscriptionType
   }[]
 }
 
@@ -30,7 +30,7 @@ export const data:Data = {
     name: 'introduction',
     max_level: 4,
     exercises: [1,2,5,6],
-    scope: Subscription.FREEMIUM,
+    scope: SubscriptionType.FREEMIUM,
     created_at: new Date(),
     updated_at: new Date(),
   },
@@ -39,7 +39,7 @@ export const data:Data = {
     name: "greetings",
     max_level: 5,
     exercises: [11,12,75,76],
-    scope: Subscription.FREEMIUM,
+    scope: SubscriptionType.FREEMIUM,
     created_at: new Date(),
     updated_at: new Date(),
   }],
@@ -53,7 +53,7 @@ export const data:Data = {
     finished_level: 1,
     created_at: new Date(),
     updated_at: new Date(),
-    scope: Subscription.PREMIUM
+    scope: SubscriptionType.PREMIUM
   },
   {
     id: "575e7b94-ebf4-4e30-9478-969c85e9baf9",
@@ -65,7 +65,7 @@ export const data:Data = {
     finished_level: 4,
     created_at: new Date(),
     updated_at: new Date(),
-    scope: Subscription.PREMIUM
+    scope: SubscriptionType.PREMIUM
   },
   {
     id: "4c609110-0c6d-4217-aad9-792d506b686f",
@@ -77,7 +77,7 @@ export const data:Data = {
     finished_level: 54,
     created_at: new Date(),
     updated_at: new Date(),
-    scope: Subscription.FREEMIUM
+    scope: SubscriptionType.FREEMIUM
   },
   {
     id: "2477c3be-f9fe-4b2d-8784-8fa5cae3b8ec",
@@ -89,7 +89,7 @@ export const data:Data = {
     finished_level: 3,
     created_at: new Date(),
     updated_at: new Date(),
-    scope: Subscription.FREEMIUM
+    scope: SubscriptionType.FREEMIUM
   },
   {
     id: "97392b1f-123e-46f6-9e4c-b649e434484c",
@@ -101,7 +101,7 @@ export const data:Data = {
     finished_level: 23,
     created_at: new Date(),
     updated_at: new Date(),
-    scope: Subscription.FREEMIUM
+    scope: SubscriptionType.FREEMIUM
   },
   {
     id: "b2ce1bba-d53b-4a09-82e8-c3bbb096c6f8",
@@ -113,6 +113,6 @@ export const data:Data = {
     finished_level: 1,
     created_at: new Date(),
     updated_at: new Date(),
-    scope: Subscription.FREEMIUM
+    scope: SubscriptionType.FREEMIUM
   }]
 }

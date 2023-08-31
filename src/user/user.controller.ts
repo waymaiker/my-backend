@@ -1,52 +1,53 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, ParseEnumPipe, ParseUUIDPipe, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, ParseEnumPipe, ParseUUIDPipe, Post, Put, Query, UseGuards } from '@nestjs/common';
 
 import { UserService } from './user.service';
 import { CreateUserDto, UpdateUserDto, UserResponseDto } from 'src/user/dtos/user.dto';
-import { Subscription } from 'src/dtos/shared/types';
+import { SubscriptionType, UserType } from '@prisma/client';
+import { Roles } from './auth/decorators/roles.decorator';
+import { AuthGuard } from './auth/guards/auth.guards';
 
-@Controller('users/:scope')
+@Controller('users')
+@UseGuards(AuthGuard)
 export class UserController {
 
-  constructor(
-    private readonly userService: UserService
-  ){}
+  constructor(private readonly userService: UserService){}
 
+  @Roles(UserType.USER, UserType.ADMIN, UserType.SUPER_ADMIN)
   @Get()
   getUsers(
-    @Param('scope', new ParseEnumPipe(Subscription)) scope: string
-  ): UserResponseDto[] {
-    const userSubscription = scope === 'freemium' ? Subscription.FREEMIUM : Subscription.PREMIUM;
-    return this.userService.getUsers(userSubscription);
+    @Query('scope') scope?: string,
+    @Query('userType') userType?: string
+  ): Promise<UserResponseDto[]> {
+    const filters = {
+      ...(userType && { user_type: userType === "admin" ? UserType.ADMIN : UserType.USER }),
+      ...(scope && { scope: scope === "freemium" ? SubscriptionType.FREEMIUM : SubscriptionType.PREMIUM })
+    };
+
+    return this.userService.getUsers(filters);
   }
 
+  @Roles(UserType.USER, UserType.ADMIN, UserType.SUPER_ADMIN)
   @Get(':id')
-  getUserById(
-    @Param('scope', new ParseEnumPipe(Subscription)) scope: string,
-    @Param('id', ParseUUIDPipe) id: string
-  ): UserResponseDto {
-    const userSubscription = scope === 'freemium' ? Subscription.FREEMIUM : Subscription.PREMIUM;
-    return this.userService.getUserById(userSubscription, id);
+  getUserById(@Param('id', ParseUUIDPipe) id: string){
+    return this.userService.getUserById(id);
   }
 
+  @Roles(UserType.ADMIN, UserType.SUPER_ADMIN)
   @Post()
-  createUser(
-    @Param('scope',  new ParseEnumPipe(Subscription)) scope: string,
-    @Body() body: CreateUserDto
-  ): UserResponseDto {
-    const userSubscription = scope === 'freemium' ? Subscription.FREEMIUM : Subscription.PREMIUM;
-    return this.userService.createAnonymousUser(userSubscription, body);
+  createUser(@Body() body: CreateUserDto){
+    return this.userService.createUser(body);
   }
 
+  @Roles(UserType.USER, UserType.ADMIN, UserType.SUPER_ADMIN)
   @Put(':id')
-  updateUser(
-    @Param('scope',  new ParseEnumPipe(Subscription)) scope: string,
+  updateUserById(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() body: UpdateUserDto,
-  ): UserResponseDto {
-    const userSubscription = scope === 'freemium' ? Subscription.FREEMIUM : Subscription.PREMIUM;
-    return this.userService.updateUser(userSubscription, id, body);
+  ) {
+    return this.userService.updateUserById(id, body);
   }
 
+  @Roles(UserType.USER, UserType.ADMIN, UserType.SUPER_ADMIN)
   @HttpCode(204)
   @Delete(':id')
   deleteUser(@Param('id', ParseUUIDPipe) id: string){
