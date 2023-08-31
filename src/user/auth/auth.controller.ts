@@ -13,6 +13,7 @@ export class AuthController {
 
   constructor(private readonly authService: AuthService){}
 
+  @Roles(UserType.USER)
   @Post("/signup/:userType")
   async signup(
     @Body() body: SignUpDto,
@@ -36,6 +37,7 @@ export class AuthController {
     return this.authService.signup(body);
   }
 
+  @Roles(UserType.USER, UserType.ADMIN, UserType.SUPER_ADMIN)
   @Post("/signin")
   signin(@Body() body: SignInDto){
     return this.authService.signin(body);
