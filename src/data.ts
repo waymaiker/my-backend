@@ -1,4 +1,4 @@
-import { Language, SubscriptionType } from "@prisma/client";
+import { Language, SubscriptionType, UserType } from "@prisma/client";
 
 export interface Data {
   chapters: {
@@ -10,6 +10,23 @@ export interface Data {
     updated_at: Date,
     scope: SubscriptionType
   }[],
+  groups: {
+    id: number,
+    creator_id: string,
+    name: string,
+    description: string,
+    is_public: boolean,
+    restricted_access: boolean,
+    created_at: Date,
+    updated_at: Date,
+    admins: [{
+      group_id: number,
+      user_id: string,
+      assigned_at: Date,
+      assigned_by: string
+    }],
+    followers: []
+  }[],
   users: {
     id: string,
     pseudo: string,
@@ -18,9 +35,8 @@ export interface Data {
     password: string;
     profile_language: Language,
     finished_level: number,
-    created_at: Date,
-    updated_at: Date,
     scope: SubscriptionType
+    user_type: UserType
   }[]
 }
 
@@ -43,76 +59,166 @@ export const data:Data = {
     created_at: new Date(),
     updated_at: new Date(),
   }],
-  users: [{
-    id: "834e0b68-6926-4329-b346-3e6e61613b94",
-    pseudo: 'PREMIUM',
-    phone: '',
-    email: '',
-    password: '',
-    profile_language: Language.ENGLISH,
-    finished_level: 1,
+  groups:[{
+    id: 1,
+    creator_id: "653c7602-adae-4bca-b11b-6f3cd341f663",
+    name: "Wolof",
+    description: "Apprends le wolof en 1 an avec la Wolof academy",
+    is_public: false,
+    restricted_access: true,
     created_at: new Date(),
     updated_at: new Date(),
-    scope: SubscriptionType.PREMIUM
+    admins:[{
+      group_id: 1,
+      user_id: "653c7602-adae-4bca-b11b-6f3cd341f663",
+      assigned_at: new Date(),
+      assigned_by: "3e0c2835-797f-4b90-bc17-d8c9de8dc95f"
+    }],
+    followers: []
   },
   {
-    id: "575e7b94-ebf4-4e30-9478-969c85e9baf9",
-    pseudo: 'PREMIUM',
-    phone: '',
-    email: '',
-    password: '',
+    id: 2,
+    creator_id: "653c7602-adae-4bca-b11b-6f3cd341f663",
+    name: "Jangalma",
+    description: "Des exercices pour t'améliorer en wolof",
+    is_public: false,
+    restricted_access: true,
+    created_at: new Date(),
+    updated_at: new Date(),
+    admins:[{
+      group_id: 2,
+      user_id: "653c7602-adae-4bca-b11b-6f3cd341f663",
+      assigned_at: new Date(),
+      assigned_by: "3e0c2835-797f-4b90-bc17-d8c9de8dc95f"
+    }],
+    followers: []
+  },
+  {
+    id: 3,
+    creator_id: "653c7602-adae-4bca-b11b-6f3cd341f663",
+    name: "Dafa neex",
+    description: "Une nouvelle expérience pour t'apprendre le wolof",
+    is_public: false,
+    restricted_access: true,
+    created_at: new Date(),
+    updated_at: new Date(),
+    admins:[{
+      group_id: 3,
+      user_id: "653c7602-adae-4bca-b11b-6f3cd341f663",
+      assigned_at: new Date(),
+      assigned_by: "3e0c2835-797f-4b90-bc17-d8c9de8dc95f"
+    }],
+    followers: []
+  },
+  {
+    id: 4,
+    creator_id: "653c7602-adae-4bca-b11b-6f3cd341f663",
+    name: "Wolof Academy",
+    description: "Des exercices pour t'améliorer en wolof",
+    is_public: false,
+    restricted_access: true,
+    created_at: new Date(),
+    updated_at: new Date(),
+    admins:[{
+      group_id: 4,
+      user_id: "653c7602-adae-4bca-b11b-6f3cd341f663",
+      assigned_at: new Date(),
+      assigned_by: "3e0c2835-797f-4b90-bc17-d8c9de8dc95f"
+    }],
+    followers: []
+  },
+  {
+    id: 5,
+    creator_id: "653c7602-adae-4bca-b11b-6f3cd341f663",
+    name: "Sama cours",
+    description: "Une nouvelle expérience pour t'apprendre le wolof",
+    is_public: false,
+    restricted_access: true,
+    created_at: new Date(),
+    updated_at: new Date(),
+    admins:[{
+      group_id: 5,
+      user_id: "653c7602-adae-4bca-b11b-6f3cd341f663",
+      assigned_at: new Date(),
+      assigned_by: "3e0c2835-797f-4b90-bc17-d8c9de8dc95f"
+    }],
+    followers: []
+  }],
+  users: [{
+    id: "3e0c2835-797f-4b90-bc17-d8c9de8dc95f",
+    pseudo: 'SUPER ADMIN',
+    phone: '01324354600',
+    email: 'superadmin@oui.sn',
+    password: 'pass<ord123',
+    profile_language: Language.ENGLISH,
+    finished_level: 0,
+    scope: SubscriptionType.PREMIUM,
+    user_type: UserType.SUPER_ADMIN
+  },
+  {
+    id: "d3a8a76d-cdc0-4b58-8ee3-6f51769c7141",
+    pseudo: 'PREMIUM1',
+    phone: '01324354600',
+    email: 'boytown2@oui.sn',
+    password: 'pass<ord123',
+    profile_language: Language.ENGLISH,
+    finished_level: 1,
+    scope: SubscriptionType.PREMIUM,
+    user_type: UserType.ADMIN
+  },
+  {
+    id: "9f904e30-8ba2-4e57-9bc3-3af0954c370e",
+    pseudo: 'PREMIUM2',
+    phone: '01324354600',
+    email: 'boytown23@oui.sn',
+    password: 'pass<ord123',
     profile_language: Language.ENGLISH,
     finished_level: 4,
-    created_at: new Date(),
-    updated_at: new Date(),
-    scope: SubscriptionType.PREMIUM
+    scope: SubscriptionType.PREMIUM,
+    user_type: UserType.ADMIN
   },
   {
-    id: "4c609110-0c6d-4217-aad9-792d506b686f",
-    pseudo: 'FREEMIUM',
-    phone: '',
-    email: '',
-    password: '',
+    id: "4728888a-2083-4db9-b10d-a41cfe71c243",
+    pseudo: 'FREEMIUM1',
+    phone: '01324354600',
+    email: 'boytown24@oui.sn',
+    password: 'pass<ord123',
     profile_language: Language.ENGLISH,
     finished_level: 54,
-    created_at: new Date(),
-    updated_at: new Date(),
-    scope: SubscriptionType.FREEMIUM
+    scope: SubscriptionType.FREEMIUM,
+    user_type: UserType.USER
   },
   {
-    id: "2477c3be-f9fe-4b2d-8784-8fa5cae3b8ec",
-    pseudo: 'FREEMIUM',
-    phone: '',
-    email: '',
-    password: '',
+    id: "0c314736-345a-46d1-a644-cab475b19e71",
+    pseudo: 'FREEMIUM2',
+    phone: '01324354600',
+    email: 'boytown25@oui.sn',
+    password: 'pass<ord123',
     profile_language: Language.FRENCH,
     finished_level: 3,
-    created_at: new Date(),
-    updated_at: new Date(),
-    scope: SubscriptionType.FREEMIUM
+    scope: SubscriptionType.FREEMIUM,
+    user_type: UserType.USER
   },
   {
-    id: "97392b1f-123e-46f6-9e4c-b649e434484c",
-    pseudo: 'FREEMIUM',
-    phone: '',
-    email: '',
-    password: '',
+    id: "fbaaa325-6b9a-4ee9-a76b-f9f3b88e2c26",
+    pseudo: 'FREEMIUM3',
+    phone: '01324354600',
+    email: 'boytown26@oui.sn',
+    password: 'pass<ord123',
     profile_language: Language.FRENCH,
     finished_level: 23,
-    created_at: new Date(),
-    updated_at: new Date(),
-    scope: SubscriptionType.FREEMIUM
+    scope: SubscriptionType.FREEMIUM,
+    user_type: UserType.USER
   },
   {
-    id: "b2ce1bba-d53b-4a09-82e8-c3bbb096c6f8",
-    pseudo: 'FREEMIUM',
-    phone: '',
-    email: '',
-    password: '',
+    id: "b1b73451-ef58-48ca-b6e5-188358c30fc1",
+    pseudo: 'FREEMIUM4',
+    phone: '01324354600',
+    email: 'boytown27@oui.sn',
+    password: 'pass<ord123',
     profile_language: Language.WOLOF,
     finished_level: 1,
-    created_at: new Date(),
-    updated_at: new Date(),
-    scope: SubscriptionType.FREEMIUM
+    scope: SubscriptionType.FREEMIUM,
+    user_type: UserType.USER
   }]
 }

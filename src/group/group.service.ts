@@ -103,7 +103,7 @@ export class GroupService {
       await this.prismaService.adminsGroup.createMany({ data: assignGroupIdOfAdmins })
     }
 
-    return this.getGroupById({id: group.id});
+    return new GroupResponseDto(group);
   }
 
   async updateGroupById(id: number, body: UpdateGroupParams) {
