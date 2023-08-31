@@ -1,13 +1,20 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, ParseIntPipe, Post, Put, Query, UnauthorizedException } from '@nestjs/common';
+import { UserType } from '@prisma/client';
+import { Body, Controller, Delete, Get, HttpCode, Param, ParseIntPipe, Post, Put, Query, UnauthorizedException, UseGuards } from '@nestjs/common';
+
+import { AuthGuard } from 'src/user/auth/guards/auth.guards';
+import { Roles } from 'src/user/auth/decorators/roles.decorator';
 import { User } from 'src/user/decorators/user.decorator';
+
 import { CreateGroupDto, GroupResponseDto, UpdateGroupDto } from './dto/group.dto';
 import { GroupService } from './group.service';
 
 @Controller('groups')
+@UseGuards(AuthGuard)
 export class GroupController {
 
   constructor(private readonly groupService: GroupService){}
 
+  @Roles(UserType.ADMIN, UserType.SUPER_ADMIN)
   @Get()
   getGroups(
     @Query('name') name?: string,
@@ -39,16 +46,20 @@ export class GroupController {
     return this.groupService.getGroups(filters);
   }
 
+  @Roles(UserType.ADMIN, UserType.SUPER_ADMIN)
   @Get(':id')
   getGroupById(@Param('id', ParseIntPipe) id: number){
     return this.groupService.getGroupById({id});
   }
 
+  @Roles(UserType.ADMIN, UserType.SUPER_ADMIN)
+  @UseGuards(AuthGuard)
   @Post()
   createGroup(@Body() body: CreateGroupDto, @User() user){
     return this.groupService.createGroup(body, user);
   }
 
+  @Roles(UserType.ADMIN, UserType.SUPER_ADMIN)
   @Put(':id')
   async updateGroup(
     @Param("id", ParseIntPipe) id: number,
@@ -65,6 +76,7 @@ export class GroupController {
     return this.groupService.updateGroupById(id, body);
   }
 
+  @Roles(UserType.ADMIN, UserType.SUPER_ADMIN)
   @HttpCode(204)
   @Delete(':id')
   deleteGroup(

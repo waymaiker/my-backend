@@ -1,14 +1,18 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, ParseEnumPipe, ParseUUIDPipe, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, ParseEnumPipe, ParseUUIDPipe, Post, Put, Query, UseGuards } from '@nestjs/common';
 
 import { UserService } from './user.service';
 import { CreateUserDto, UpdateUserDto, UserResponseDto } from 'src/user/dtos/user.dto';
 import { SubscriptionType, UserType } from '@prisma/client';
+import { Roles } from './auth/decorators/roles.decorator';
+import { AuthGuard } from './auth/guards/auth.guards';
 
 @Controller('users')
+@UseGuards(AuthGuard)
 export class UserController {
 
   constructor(private readonly userService: UserService){}
 
+  @Roles(UserType.USER, UserType.ADMIN, UserType.SUPER_ADMIN)
   @Get()
   getUsers(
     @Query('scope') scope?: string,
@@ -22,16 +26,19 @@ export class UserController {
     return this.userService.getUsers(filters);
   }
 
+  @Roles(UserType.USER, UserType.ADMIN, UserType.SUPER_ADMIN)
   @Get(':id')
   getUserById(@Param('id', ParseUUIDPipe) id: string){
     return this.userService.getUserById(id);
   }
 
+  @Roles(UserType.ADMIN, UserType.SUPER_ADMIN)
   @Post()
   createUser(@Body() body: CreateUserDto){
     return this.userService.createUser(body);
   }
 
+  @Roles(UserType.USER, UserType.ADMIN, UserType.SUPER_ADMIN)
   @Put(':id')
   updateUserById(
     @Param('id', ParseUUIDPipe) id: string,
@@ -40,6 +47,7 @@ export class UserController {
     return this.userService.updateUserById(id, body);
   }
 
+  @Roles(UserType.USER, UserType.ADMIN, UserType.SUPER_ADMIN)
   @HttpCode(204)
   @Delete(':id')
   deleteUser(@Param('id', ParseUUIDPipe) id: string){
