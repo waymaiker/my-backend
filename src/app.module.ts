@@ -17,7 +17,7 @@ import { UserService } from 'src/user/user.service';
 import { ExerciseService } from './exercise/exercise.service';
 
 //Providers
-import { UserInterceptor } from './user/interceptors/user.interceptor';
+import { UserInterceptor } from 'src/interceptors/user.interceptor';
 
 @Module({
   imports: [UserModule, ExerciseModule, ChapterModule, PrismaModule, GroupModule],
