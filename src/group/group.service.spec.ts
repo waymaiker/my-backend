@@ -258,7 +258,7 @@ describe('GroupService', () => {
         data: {
           group_id: createdGroup.id,
           user_id: mockAdmins[0].user_id,
-          assigned_by: user.id,
+          assigned_by: createdGroup.creator_id,
         }
       })
 
