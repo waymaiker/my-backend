@@ -72,10 +72,11 @@ export class GroupResponseDto {
   id: number;
   name: string;
   description: string;
-
   admins: AdminsDto[];
-
   followers: FollowersDto[];
+
+  @Exclude()
+  creator_id: String;
 
   @Exclude()
   is_public: boolean;
@@ -88,6 +89,11 @@ export class GroupResponseDto {
 
   @Exclude()
   updated_at: Date;
+
+  @Expose({ name: 'creatorId' })
+  transformCreatorId(){
+    return this.creator_id;
+  }
 
   @Expose({ name: 'createdAt' })
   transformCreatedAt(){

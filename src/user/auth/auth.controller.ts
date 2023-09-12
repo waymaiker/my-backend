@@ -4,8 +4,8 @@ import { UserType } from '@prisma/client';
 
 import { GenerateProductKey, SignInDto, SignUpDto } from '../dtos/auth.dto';
 import { AuthService } from './auth.service';
-import { AuthGuard } from './guards/auth.guards';
-import { Roles } from './decorators/roles.decorator';
+import { AuthGuard } from '../../guards/auth.guards';
+import { Roles } from '../../decorators/roles.decorator';
 
 @Controller('auth')
 @UseGuards(AuthGuard)
