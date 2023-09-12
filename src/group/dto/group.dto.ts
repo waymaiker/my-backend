@@ -90,7 +90,7 @@ export class GroupResponseDto {
   @Exclude()
   updated_at: Date;
 
-  @Expose({ name: 'createdAt' })
+  @Expose({ name: 'creatorId' })
   transformCreatorId(){
     return this.creator_id;
   }
