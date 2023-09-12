@@ -179,8 +179,6 @@ describe('GroupService', () => {
       jest.spyOn(prismaService.adminsGroup, 'create').mockImplementation(mockPrismaCreateGroupAdmin)
 
       const createdGroup =  await service.createGroup(body, user)
-      console.log(createdGroup);
-
 
       expect(mockPrismaCreateGroup).toBeCalledWith({
         data: {
