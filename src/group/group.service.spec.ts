@@ -72,9 +72,6 @@ const mockGroupWithAdminAndFollowers = {
   ]
 }
 
-// const mockAdminsGroup = [];
-// const mockFollowersGroup = [];
-
 describe('GroupService', () => {
   let service: GroupService;
   let prismaService: PrismaService;
@@ -261,8 +258,6 @@ describe('GroupService', () => {
           assigned_by: createdGroup.creator_id,
         }
       })
-
-
 
       expect(mockPrismaCreateGroupAdminAndFollowers).toBeCalledWith({
         data: [{
