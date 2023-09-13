@@ -1,4 +1,4 @@
-import { Body, ConflictException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { data } from 'src/data';
@@ -179,8 +179,6 @@ describe('GroupService', () => {
       jest.spyOn(prismaService.adminsGroup, 'create').mockImplementation(mockPrismaCreateGroupAdmin)
 
       const createdGroup =  await service.createGroup(body, user)
-      console.log(createdGroup);
-
 
       expect(mockPrismaCreateGroup).toBeCalledWith({
         data: {
