@@ -1,7 +1,7 @@
 import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UserWhoRequested } from 'src/user/decorators/user.decorator';
+import { UserWhoRequested } from 'src/decorators/user.decorator';
 import { Admin, Follower, GroupResponseDto } from './dto/group.dto';
 
 interface GetGroupsParams {
@@ -85,7 +85,7 @@ export class GroupService {
       }
     })
 
-    const assignGroupCreatorAsAnAdmin = {user_id: user.id, group_id: group.id, assigned_by: user.id}
+    const assignGroupCreatorAsAnAdmin = {user_id: user.id, group_id: group.id, assigned_by: group.creator_id}
     await this.prismaService.adminsGroup.create({ data: assignGroupCreatorAsAnAdmin })
 
     if(followers){
@@ -98,7 +98,7 @@ export class GroupService {
 
     if(admins){
       const assignGroupIdOfAdmins = admins.map(admin => {
-        return {user_id: admin.user_id, group_id: group.id, assigned_by: admin.user_id} }
+        return {user_id: admin.user_id, group_id: group.id, assigned_by: group.creator_id} }
       );
       await this.prismaService.adminsGroup.createMany({ data: assignGroupIdOfAdmins })
     }

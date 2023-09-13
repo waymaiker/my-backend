@@ -3,8 +3,8 @@ import { Body, Controller, Delete, Get, HttpCode, Param, ParseEnumPipe, ParseUUI
 import { UserService } from './user.service';
 import { CreateUserDto, UpdateUserDto, UserResponseDto } from 'src/user/dtos/user.dto';
 import { SubscriptionType, UserType } from '@prisma/client';
-import { Roles } from './auth/decorators/roles.decorator';
-import { AuthGuard } from './auth/guards/auth.guards';
+import { Roles } from '../decorators/roles.decorator';
+import { AuthGuard } from '../guards/auth.guards';
 
 @Controller('users')
 @UseGuards(AuthGuard)
