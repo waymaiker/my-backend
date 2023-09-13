@@ -1,13 +1,25 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { UserController } from '../user.controller';
+import { UserService } from '../user.service';
 import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
 
 describe('AuthController', () => {
   let controller: AuthController;
 
+  const mockPrisma = {
+    user: { findMany: () => Promise.resolve([]) },
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [AuthController],
-    }).compile();
+      controllers: [UserController, AuthController],
+      providers: [UserService, AuthService, PrismaService]
+    })
+    .overrideProvider(PrismaService)
+    .useValue(mockPrisma)
+    .compile();
 
     controller = module.get<AuthController>(AuthController);
   });
