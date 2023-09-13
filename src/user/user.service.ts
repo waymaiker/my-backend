@@ -50,7 +50,7 @@ export class UserService {
   }
 
   async getUserById(id: string){
-    const user = await this.prismaService.user.findUnique({ where: { id } });
+    const user = await this.prismaService.user.findUniqueOrThrow({ where: { id } });
 
     if(!user){
       throw new NotFoundException();
@@ -65,22 +65,12 @@ export class UserService {
     }: CreateUser
   ){
 
-    const emailAlreadyUsed = await this.prismaService.user.findUnique({
-      where: {
-        email: email
-      }
-    })
-
-    if(emailAlreadyUsed){
+    const emailAlreayUsed = await this.prismaService.user.findUnique({ where: { email } })
+    if(emailAlreayUsed){
       throw new ConflictException("This email is already used")
     }
 
-    const pseudoAlreadyUsed = await this.prismaService.user.findUnique({
-      where: {
-        pseudo: pseudo
-      }
-    })
-
+    const pseudoAlreadyUsed = await this.prismaService.user.findUnique({ where: { pseudo } })
     if(pseudoAlreadyUsed){
       throw new ConflictException("This pseudo is already used");
     }
@@ -102,11 +92,7 @@ export class UserService {
   }
 
   async updateUserById(id: string, body: UpdateUser) {
-    const user = await this.prismaService.user.findUnique({ where: { id } });
-
-    if(!user){
-      throw new NotFoundException()
-    }
+    await this.getUserById(id)
 
     const pseudoAlreadyUsed = await this.prismaService.user.findUnique({ where: { pseudo: body.pseudo } })
 
