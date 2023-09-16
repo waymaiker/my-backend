@@ -1,4 +1,4 @@
-import { Body, ConflictException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { data } from 'src/data';
