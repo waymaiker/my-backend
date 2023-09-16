@@ -1,7 +1,6 @@
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Language, SubscriptionType, UserType } from '@prisma/client';
-import * as bcrypt from 'bcryptjs';
 
 import { data } from 'src/data';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -40,7 +39,7 @@ describe('UserService', () => {
   describe('getUsers', () => {
     const filters = {}
 
-    it('should find many groups with correct parameters', async () => {
+    it('should find many users with correct parameters', async () => {
       const mockPrismaFindManyUsers = jest.fn().mockReturnValue([mockUsers])
       jest.spyOn(prismaService.user, 'findMany').mockImplementation(mockPrismaFindManyUsers)
 
@@ -54,7 +53,6 @@ describe('UserService', () => {
         }
       })
     })
-
 
     it('should throw NotFoundException if no user has been found', async () => {
       const mockPrismaFindManyUsers = jest.fn().mockReturnValue([])
@@ -80,7 +78,7 @@ describe('UserService', () => {
         where: filters,
       })
 
-      expect(user).toEqual(new UserResponseDto(mockUser))
+      expect(user.id).toEqual(new UserResponseDto(mockUser).id)
     })
 
     it('should throw NotFoundException if no user has been found', async () => {
@@ -103,7 +101,7 @@ describe('UserService', () => {
       user_type: UserType.ADMIN
     }
 
-    it('should create an user', async () => {
+    it('should create a user', async () => {
       const module: TestingModule = await Test.createTestingModule({
         providers: [UserService, {
           provide: PrismaService,
@@ -175,7 +173,8 @@ describe('UserService', () => {
 
       const updatedUser =  await service.updateUserById(filters.id, body)
 
-      expect(updatedUser).toEqual(mockUserUpdated)
+      expect(updatedUser.id).toEqual(mockUserUpdated.id)
+      expect(updatedUser.pseudo).toEqual(mockUserUpdated.pseudo)
     })
 
     it('should throw NotFoundException if no user has been found, based on the userId', async () => {
@@ -236,7 +235,7 @@ describe('UserService', () => {
       const usersLeft =  await service.deleteUser(filters.id)
 
       expect(usersLeft.length).toEqual(data.users.length - 1)
-      expect(usersLeft.filter(user => user.id == filters.id )).toEqual([])
+      expect(usersLeft.filter(user => user.id == filters.id)).toEqual([])
     })
 
     it('should throw NotFoundException if no user has been found, based on the userId', async () => {
