@@ -212,7 +212,7 @@ describe('GroupService', () => {
       })
 
       expect(createdGroup.admins.length).toEqual(1)
-      expect(createdGroup.admins.find(admin => admin.user_id == createdGroup.creator_id)).toBeTruthy()
+      expect(createdGroup.admins.find(admin => admin.user_id == createdGroup.creator_id)).toBeDefined()
     })
 
     it('should create a group with the creator as an admin and several followers', async () => {
@@ -283,7 +283,7 @@ describe('GroupService', () => {
       })
 
       expect(createdGroup.admins.length).toEqual(1)
-      expect(createdGroup.admins.find(admin => admin.user_id == createdGroup.creator_id)).toBeTruthy()
+      expect(createdGroup.admins.find(admin => admin.user_id == createdGroup.creator_id)).toBeDefined()
       expect(createdGroup.followers.length).toBeGreaterThan(1)
       expect(createdGroup.followers.length).toEqual(mockGroupWithAdminAndFollowers.followers.length)
     })
@@ -355,7 +355,7 @@ describe('GroupService', () => {
         }]
       })
 
-      expect(createdGroup.admins.find(admin => admin.user_id == createdGroup.creator_id)).toBeTruthy()
+      expect(createdGroup.admins.find(admin => admin.user_id == createdGroup.creator_id)).toBeDefined()
       expect(createdGroup.admins.length).toBeGreaterThan(1)
     })
 
