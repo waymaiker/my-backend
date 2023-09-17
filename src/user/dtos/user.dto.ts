@@ -61,6 +61,8 @@ export class UserResponseDto {
   id: string;
   pseudo: string;
   scope: SubscriptionType;
+  email: string;
+  phone: string;
 
   @Exclude()
   user_type: UserType;
