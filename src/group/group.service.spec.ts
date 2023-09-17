@@ -3,10 +3,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { data } from 'src/data';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { GroupResponseDto } from './dto/group.dto';
 import { GroupService } from './group.service';
 
-const mockGroups = data.groups.find(group => group.is_public == false)
+const mockGroups = data.groups
 const mockGroup = data.groups.find(group => group.id == 1)
 const mockCreatedGroup = {
   id: 1,
@@ -72,6 +71,20 @@ const mockGroupWithAdminAndFollowers = {
   ]
 }
 
+const mockGroupWithAdmins = {
+  id: 1,
+  creator_id: "653c7602-adae-4bca-b11b-6f3cd341f663",
+  name: "Mon Group Test",
+  description: "Apprends le wolof en 1 an avec la Wolof academy",
+  is_public: false,
+  restricted_access: true,
+  admins: [
+    mockAdmins[0],
+    mockAdmins[1],
+    mockAdmins[2]
+  ]
+}
+
 describe('GroupService', () => {
   let service: GroupService;
   let prismaService: PrismaService;
@@ -85,7 +98,7 @@ describe('GroupService', () => {
             findMany: jest.fn().mockReturnValue([mockGroups]),
             findUnique: jest.fn().mockReturnValue(mockGroupWithAdmin),
             create: jest.fn().mockReturnValue(mockCreatedGroup),
-            findFirst: jest.fn().mockReturnValue(null)
+            findFirst: jest.fn().mockReturnValue(null),
           },
           adminsGroup: {
             create: jest.fn().mockReturnValue([mockAdmins[0]]),
@@ -103,15 +116,13 @@ describe('GroupService', () => {
   });
 
   describe('getGroups', () => {
-    const filters = {
-      is_public: false
-    };
+    const filters = {};
 
     it('should find many groups with correct parameters', async () => {
-      const mockPrismaFindManyGroups = jest.fn().mockReturnValue([mockGroups])
+      const mockPrismaFindManyGroups = jest.fn().mockReturnValue(mockGroups)
       jest.spyOn(prismaService.group, 'findMany').mockImplementation(mockPrismaFindManyGroups)
 
-      await service.getGroups(filters)
+      const groups = await service.getGroups(filters)
 
       expect(mockPrismaFindManyGroups).toBeCalledWith({
         where: filters,
@@ -120,6 +131,8 @@ describe('GroupService', () => {
           admins: true
         }
       })
+
+      expect(groups.length).toBeGreaterThan(1)
     })
 
     it('should throw NotFoundException if no group has been found', async () => {
@@ -139,7 +152,7 @@ describe('GroupService', () => {
       const mockPrismaFindUniqueGroup = jest.fn().mockReturnValue(mockGroup)
       jest.spyOn(prismaService.group, 'findUnique').mockImplementation(mockPrismaFindUniqueGroup)
 
-      await service.getGroupById(filters)
+      const foundGroup = await service.getGroupById(filters)
 
       expect(mockPrismaFindUniqueGroup).toBeCalledWith({
         where: filters,
@@ -148,6 +161,8 @@ describe('GroupService', () => {
           admins: true
         }
       })
+
+      expect(foundGroup.id).toEqual(filters.id)
     })
 
     it('should throw NotFoundException if no group has been found', async () => {
@@ -196,9 +211,8 @@ describe('GroupService', () => {
         }
       })
 
-      expect(createdGroup.admins.length).toEqual(mockGroupWithAdmin.admins.length);
-      expect(createdGroup.admins[0].user_id).toEqual(mockGroupWithAdmin.admins[0].user_id)
-      expect(createdGroup).toEqual(new GroupResponseDto(mockGroupWithAdmin))
+      expect(createdGroup.admins.length).toEqual(1)
+      expect(createdGroup.admins.find(admin => admin.user_id == createdGroup.creator_id)).toBeTruthy()
     })
 
     it('should create a group with the creator as an admin and several followers', async () => {
@@ -267,6 +281,11 @@ describe('GroupService', () => {
           user_id: mockFollowers[1].user_id,
         }]
       })
+
+      expect(createdGroup.admins.length).toEqual(1)
+      expect(createdGroup.admins.find(admin => admin.user_id == createdGroup.creator_id)).toBeTruthy()
+      expect(createdGroup.followers.length).toBeGreaterThan(1)
+      expect(createdGroup.followers.length).toEqual(mockGroupWithAdminAndFollowers.followers.length)
     })
 
     it('should create a group with the creator as an admin and several admins', async () => {
@@ -282,7 +301,7 @@ describe('GroupService', () => {
           useValue: {
             group: {
               findMany: jest.fn().mockReturnValue([mockGroups]),
-              findUnique: jest.fn().mockReturnValue(mockGroupWithAdminAndFollowers),
+              findUnique: jest.fn().mockReturnValue(mockGroupWithAdmins),
               create: jest.fn().mockReturnValue(mockCreatedGroup),
               findFirst: jest.fn().mockReturnValue(null)
             },
@@ -299,7 +318,7 @@ describe('GroupService', () => {
 
       const mockPrismaCreateGroup = jest.fn().mockReturnValue(mockCreatedGroup)
       const mockPrismaCreateGroupAdmin = jest.fn().mockReturnValue(mockGroupWithAdmin)
-      const mockPrismaCreateGroupAdmins = jest.fn().mockReturnValue(mockGroupWithAdminAndFollowers)
+      const mockPrismaCreateGroupAdmins = jest.fn().mockReturnValue([mockAdmins[1], mockAdmins[2]])
 
       jest.spyOn(prismaService.group, 'create').mockImplementation(mockPrismaCreateGroup)
       jest.spyOn(prismaService.adminsGroup, 'create').mockImplementation(mockPrismaCreateGroupAdmin)
@@ -335,6 +354,9 @@ describe('GroupService', () => {
           assigned_by: createdGroup.creator_id,
         }]
       })
+
+      expect(createdGroup.admins.find(admin => admin.user_id == createdGroup.creator_id)).toBeTruthy()
+      expect(createdGroup.admins.length).toBeGreaterThan(1)
     })
 
     it('should throw ConflictException if the group name is already used', async () => {
@@ -364,6 +386,99 @@ describe('GroupService', () => {
       jest.spyOn(prismaService.group, 'findUnique').mockImplementation(mockPrismaFindUniqueGroup)
 
       await expect(service.createGroup(body, null)).rejects.toThrowError(UnauthorizedException)
+    })
+  })
+
+  describe('updateGroupById', () => {
+    const filters = { id: 1 }
+
+    const body = {
+      name: "Mon Group Update name",
+      description: "Apprends le wolof en 1 an avec la Wolof academy",
+    };
+
+    it('should update the name of the group equals to the provided Id', async () => {
+      let mockGroup = mockGroups.find(user => user.id == filters.id);
+      let mockGroupUpdated = {
+        ...mockGroup,
+        name: body.name,
+      };
+
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [GroupService, {
+          provide: PrismaService,
+          useValue: {
+            group: {
+              findUnique: jest.fn().mockReturnValue(mockGroupWithAdmin),
+              update: jest.fn().mockReturnValue(mockGroupUpdated),
+            }
+          }
+        }],
+      }).compile();
+
+      service = module.get<GroupService>(GroupService);
+      prismaService = module.get<PrismaService>(PrismaService);
+
+      const mockPrismaUpdatedGroup = jest.fn().mockReturnValue(mockGroupUpdated)
+      jest.spyOn(prismaService.group, 'update').mockImplementation(mockPrismaUpdatedGroup)
+
+      const updatedGroup =  await service.updateGroupById(filters.id, body)
+
+      expect(updatedGroup.name == mockGroup.name).toBeFalsy()
+      expect(updatedGroup.name == body.name).toBeTruthy()
+      expect(updatedGroup.id).toEqual(filters.id)
+    })
+
+    it('should throw NotFoundException if no group has been found',async () => {
+      const mockPrismaFindUniqueGroup = jest.fn().mockReturnValue(null)
+      jest.spyOn(prismaService.group, 'findUnique').mockImplementation(mockPrismaFindUniqueGroup)
+
+      await expect(service.updateGroupById(2, body)).rejects.toThrowError(NotFoundException)
+    })
+  })
+
+  describe('deleteGroupById', () => {
+    const filters = {
+      id: 1
+    }
+
+    it('should delete the user with the provided Id', async () => {
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [GroupService, {
+          provide: PrismaService,
+          useValue: {
+            group: {
+              findFirst: jest.fn().mockReturnValue(mockGroup),
+              findMany: jest.fn().mockReturnValue(mockGroups.filter(group => group.id != filters.id)),
+              delete: jest.fn().mockReturnValue(null),
+            },
+            adminsGroup: {
+              deleteMany: jest.fn().mockReturnValue(null),
+            },
+            followersGroup: {
+              deleteMany: jest.fn().mockReturnValue(null),
+            },
+          }
+        }],
+      }).compile();
+
+      service = module.get<GroupService>(GroupService);
+      prismaService = module.get<PrismaService>(PrismaService);
+
+      const mockPrismaDeleteGroup = jest.fn().mockReturnValue(data.groups.filter(group => group.id != filters.id))
+      jest.spyOn(prismaService.group, 'delete').mockImplementation(mockPrismaDeleteGroup)
+
+      const groupsLeft =  await service.deleteGroupById(filters.id)
+
+      expect(groupsLeft.length).toEqual(data.groups.length - 1)
+      expect(groupsLeft.filter(user => user.id == filters.id)).toEqual([])
+    })
+
+    it('should throw NotFoundException if no user has been found, based on the userId', async () => {
+      const mockPrismaFindUniqueGroup = jest.fn().mockReturnValue(null)
+      jest.spyOn(prismaService.group, 'findUnique').mockImplementation(mockPrismaFindUniqueGroup)
+
+      await expect(service.deleteGroupById(filters.id)).rejects.toThrowError(NotFoundException)
     })
   })
 });

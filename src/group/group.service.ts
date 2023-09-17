@@ -125,12 +125,15 @@ export class GroupService {
     const isGroupExists = await this.prismaService.group.findFirst({ where: { id } });
 
     if(!isGroupExists){
-      throw new ConflictException("This group id doesnt exist")
+      throw new NotFoundException()
     }
 
     await this.prismaService.adminsGroup.deleteMany({ where: { group_id: id } })
     await this.prismaService.followersGroup.deleteMany({ where: { group_id: id } })
     await this.prismaService.group.delete({ where: {id} })
+    const groups = await this.prismaService.group.findMany()
+
+    return groups.map((group) => new GroupResponseDto(group))
   }
 
   async getCreatorByGroupId(id: number) {
