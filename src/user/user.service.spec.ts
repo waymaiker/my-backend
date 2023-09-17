@@ -40,10 +40,10 @@ describe('UserService', () => {
     const filters = {}
 
     it('should find many users with correct parameters', async () => {
-      const mockPrismaFindManyUsers = jest.fn().mockReturnValue([mockUsers])
+      const mockPrismaFindManyUsers = jest.fn().mockReturnValue(mockUsers)
       jest.spyOn(prismaService.user, 'findMany').mockImplementation(mockPrismaFindManyUsers)
 
-      await service.getUsers(filters)
+      const users = await service.getUsers(filters)
 
       expect(mockPrismaFindManyUsers).toBeCalledWith({
         where: filters,
@@ -52,6 +52,8 @@ describe('UserService', () => {
           groups: true
         }
       })
+
+      expect(users.length).toBeGreaterThan(1)
     })
 
     it('should throw NotFoundException if no user has been found', async () => {
@@ -78,7 +80,7 @@ describe('UserService', () => {
         where: filters,
       })
 
-      expect(user.id).toEqual(new UserResponseDto(mockUser).id)
+      expect(user.id).toEqual(filters.id)
     })
 
     it('should throw NotFoundException if no user has been found', async () => {
@@ -90,7 +92,6 @@ describe('UserService', () => {
   })
 
   describe('createUser', () => {
-    let mockUserAlreadyExist = data.users.pop();
     let body = {
       pseudo: 'PREMIUM3',
       phone: '01324354600',
@@ -102,6 +103,15 @@ describe('UserService', () => {
     }
 
     it('should create a user', async () => {
+      const userCreated = {
+        email: body.email,
+        phone: body.phone,
+        pseudo: body.pseudo,
+        profile_language: body.profile_language,
+        scope: body.scope,
+        user_type: body.user_type,
+      }
+
       const module: TestingModule = await Test.createTestingModule({
         providers: [UserService, {
           provide: PrismaService,
@@ -117,17 +127,24 @@ describe('UserService', () => {
 
       service = module.get<UserService>(UserService);
       prismaService = module.get<PrismaService>(PrismaService);
-      body = {...body, email: 'newemaill@local.com'}
 
-      const mockPrismaCreateUser = jest.fn().mockReturnValue(new UserResponseDto(body))
+      const mockPrismaCreateUser = jest.fn().mockReturnValue(new UserResponseDto(userCreated))
       jest.spyOn(prismaService.user, 'create').mockImplementation(mockPrismaCreateUser)
 
       const createdUser =  await service.createUser(body)
 
-      expect(createdUser).toEqual(new UserResponseDto(body))
+      expect(createdUser).toEqual(new UserResponseDto({
+        email: body.email,
+        phone: body.phone,
+        pseudo: body.pseudo,
+        profile_language: body.profile_language,
+        scope: body.scope,
+        user_type: body.user_type,
+      }))
     })
 
     it('should throw ConflictException if the user email is already used', async () => {
+      let mockUserAlreadyExist = data.users.pop();
       const mockPrismaFindUniqueUser = jest.fn().mockReturnValue(mockUserAlreadyExist)
       jest.spyOn(prismaService.user, 'findUnique').mockImplementation(mockPrismaFindUniqueUser)
 
@@ -173,8 +190,8 @@ describe('UserService', () => {
 
       const updatedUser =  await service.updateUserById(filters.id, body)
 
-      expect(updatedUser.id).toEqual(mockUserUpdated.id)
-      expect(updatedUser.pseudo).toEqual(mockUserUpdated.pseudo)
+      expect(updatedUser.id).toEqual(filters.id)
+      expect(updatedUser.pseudo).toEqual(body.pseudo)
     })
 
     it('should throw NotFoundException if no user has been found, based on the userId', async () => {
