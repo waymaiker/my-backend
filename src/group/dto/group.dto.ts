@@ -76,7 +76,7 @@ export class GroupResponseDto {
   followers: FollowersDto[];
 
   @Exclude()
-  creator_id: String;
+  creator_id: string;
 
   @Exclude()
   is_public: boolean;
