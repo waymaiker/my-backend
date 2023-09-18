@@ -46,8 +46,7 @@ export class AuthController {
   @Roles(UserType.SUPER_ADMIN)
   @Post("/key/:type")
   generateProductKey(
-    @Body() { userType, email }: GenerateProductKey,
-    @Param('type', new ParseEnumPipe(UserType)) type: UserType,
+    @Body() { userType, email }: GenerateProductKey
   ){
     return this.authService.generateProductKey(email, userType);
   }
