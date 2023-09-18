@@ -398,8 +398,8 @@ describe('GroupService', () => {
     };
 
     it('should update the name of the group equals to the provided Id', async () => {
-      let mockGroup = mockGroups.find(user => user.id == filters.id);
-      let mockGroupUpdated = {
+      const mockGroup = mockGroups.find(user => user.id == filters.id);
+      const mockGroupUpdated = {
         ...mockGroup,
         name: body.name,
       };

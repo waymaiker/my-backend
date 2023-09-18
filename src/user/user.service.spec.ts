@@ -92,7 +92,7 @@ describe('UserService', () => {
   })
 
   describe('createUser', () => {
-    let body = {
+    const body = {
       pseudo: 'PREMIUM3',
       phone: '01324354600',
       email: 'boytown23@oui.sn',
@@ -144,7 +144,7 @@ describe('UserService', () => {
     })
 
     it('should throw ConflictException if the user email is already used', async () => {
-      let mockUserAlreadyExist = data.users.pop();
+      const mockUserAlreadyExist = data.users.pop();
       const mockPrismaFindUniqueUser = jest.fn().mockReturnValue(mockUserAlreadyExist)
       jest.spyOn(prismaService.user, 'findUnique').mockImplementation(mockPrismaFindUniqueUser)
 
@@ -153,18 +153,18 @@ describe('UserService', () => {
   })
 
   describe('updateUserById', () => {
-    let mockUserAlreadyExist = data.users.pop();
+    const mockUserAlreadyExist = data.users.pop();
     const filters = {
       id: "9f904e30-8ba2-4e57-9bc3-3af0954c370e"
     };
 
-    let body = {
+    const body = {
       pseudo: 'Mike Bless',
     }
 
     it('should update the name of the user with the provided Id', async () => {
-      let mockUser = mockUsers.find(user => user.id == filters.id);
-      let mockUserUpdated = {
+      const mockUser = mockUsers.find(user => user.id == filters.id);
+      const mockUserUpdated = {
         ...mockUser,
         pseudo: body.pseudo
       };
