@@ -11,10 +11,10 @@ import { AppController } from './app.controller';
 
 //Services
 import { AppService } from './app.service';
-import { UserService } from 'src/user/user.service';
+import { UserService } from './user/user.service';
 
 //Providers
-import { UserInterceptor } from 'src/interceptors/user.interceptor';
+import { UserInterceptor } from './interceptors/user.interceptor';
 
 @Module({
   imports: [UserModule, PrismaModule, GroupModule],

@@ -1,9 +1,9 @@
-import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 import * as bcrypt from 'bcryptjs';
-
-import { UserResponseDto } from "src/user/dtos/user.dto";
-import { PrismaService } from "src/prisma/prisma.service";
+import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 import { SubscriptionType, Language, UserType, Prisma } from "@prisma/client";
+
+import { PrismaService } from "../prisma/prisma.service";
+import { UserResponseDto } from "../user/dtos/user.dto";
 
 interface GetUserParams {
   scope?: SubscriptionType

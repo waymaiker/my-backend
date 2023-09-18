@@ -2,8 +2,8 @@ import { ConflictException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Language, SubscriptionType, UserType } from '@prisma/client';
 
-import { data } from 'src/data';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { data } from '../data';
+import { PrismaService } from '../prisma/prisma.service';
 import { UserResponseDto } from './dtos/user.dto';
 import { UserService } from './user.service';
 

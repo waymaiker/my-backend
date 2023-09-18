@@ -1,7 +1,7 @@
 import * as bcrypt from 'bcryptjs';
 import { ConflictException } from '@nestjs/common'
 import { Language, Prisma, PrismaClient, SubscriptionType, UserType } from '@prisma/client'
-import { CreateUserDto } from 'src/user/dtos/user.dto';
+import { CreateUserDto } from '../user/dtos/user.dto';
 
 const prisma = new PrismaClient()
 

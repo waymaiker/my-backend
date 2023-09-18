@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, ParseUUIDPipe, Post, Put, Query, UseGuards } from '@nestjs/common';
-
-import { UserService } from './user.service';
-import { CreateUserDto, UpdateUserDto, UserResponseDto } from 'src/user/dtos/user.dto';
 import { SubscriptionType, UserType } from '@prisma/client';
+
+import { CreateUserDto, UpdateUserDto, UserResponseDto } from '../user/dtos/user.dto';
+import { UserService } from './user.service';
 import { Roles } from '../decorators/roles.decorator';
 import { AuthGuard } from '../guards/auth.guards';
 

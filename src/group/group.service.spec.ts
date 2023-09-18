@@ -1,8 +1,8 @@
 import { ConflictException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { data } from 'src/data';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { data } from '../data';
+import { PrismaService } from '../prisma/prisma.service';
 import { GroupService } from './group.service';
 
 const mockGroups = data.groups

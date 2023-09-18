@@ -1,7 +1,7 @@
 import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { UserWhoRequested } from 'src/decorators/user.decorator';
+import { PrismaService } from '../prisma/prisma.service';
+import { UserWhoRequested } from '../decorators/user.decorator';
 import { Admin, Follower, GroupResponseDto } from './dto/group.dto';
 
 interface GetGroupsParams {
