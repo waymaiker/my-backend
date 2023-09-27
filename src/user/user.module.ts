@@ -1,4 +1,3 @@
-import { APP_GUARD } from '@nestjs/core';
 import { Module } from '@nestjs/common';
 
 import { PrismaModule } from 'src/prisma/prisma.module';

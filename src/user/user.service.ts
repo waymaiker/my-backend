@@ -76,7 +76,7 @@ export class UserService {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    let dataToCreateUser: Prisma.UserCreateInput = {
+    const dataToCreateUser: Prisma.UserCreateInput = {
       email: email,
       phone: phone,
       password: hashedPassword,
@@ -100,7 +100,7 @@ export class UserService {
       throw new ConflictException("This pseudo is already used");
     }
 
-    let dataToUpdateUser: Prisma.UserUpdateInput = {
+    const dataToUpdateUser: Prisma.UserUpdateInput = {
       ...body,
       updated_at: new Date()
     };

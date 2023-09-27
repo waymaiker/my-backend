@@ -1,5 +1,5 @@
 import { UserType } from "@prisma/client";
-import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, Matches, MinLength } from "class-validator";
+import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, MinLength } from "class-validator";
 import { CreateUserDto } from "./user.dto";
 
 export class SignUpDto extends CreateUserDto {

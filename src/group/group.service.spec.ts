@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { data } from 'src/data';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { GroupResponseDto } from './dto/group.dto';
 import { GroupService } from './group.service';
 
 const mockGroups = data.groups
@@ -122,7 +123,7 @@ describe('GroupService', () => {
       const mockPrismaFindManyGroups = jest.fn().mockReturnValue(mockGroups)
       jest.spyOn(prismaService.group, 'findMany').mockImplementation(mockPrismaFindManyGroups)
 
-      const groups = await service.getGroups(filters)
+      const groups:GroupResponseDto[] = await service.getGroups(filters)
 
       expect(mockPrismaFindManyGroups).toBeCalledWith({
         where: filters,
@@ -152,7 +153,7 @@ describe('GroupService', () => {
       const mockPrismaFindUniqueGroup = jest.fn().mockReturnValue(mockGroup)
       jest.spyOn(prismaService.group, 'findUnique').mockImplementation(mockPrismaFindUniqueGroup)
 
-      const foundGroup = await service.getGroupById(filters)
+      const foundGroup:GroupResponseDto = await service.getGroupById(filters)
 
       expect(mockPrismaFindUniqueGroup).toBeCalledWith({
         where: filters,
@@ -193,7 +194,7 @@ describe('GroupService', () => {
       jest.spyOn(prismaService.group, 'create').mockImplementation(mockPrismaCreateGroup)
       jest.spyOn(prismaService.adminsGroup, 'create').mockImplementation(mockPrismaCreateGroupAdmin)
 
-      const createdGroup =  await service.createGroup(body, user)
+      const createdGroup:GroupResponseDto =  await service.createGroup(body, user)
 
       expect(mockPrismaCreateGroup).toBeCalledWith({
         data: {
@@ -253,7 +254,7 @@ describe('GroupService', () => {
       jest.spyOn(prismaService.adminsGroup, 'create').mockImplementation(mockPrismaCreateGroupAdmin)
       jest.spyOn(prismaService.followersGroup, 'createMany').mockImplementation(mockPrismaCreateGroupAdminAndFollowers)
 
-      const createdGroup =  await service.createGroup(body, user)
+      const createdGroup:GroupResponseDto =  await service.createGroup(body, user)
 
       expect(mockPrismaCreateGroup).toBeCalledWith({
         data: {
@@ -324,7 +325,7 @@ describe('GroupService', () => {
       jest.spyOn(prismaService.adminsGroup, 'create').mockImplementation(mockPrismaCreateGroupAdmin)
       jest.spyOn(prismaService.adminsGroup, 'createMany').mockImplementation(mockPrismaCreateGroupAdmins)
 
-      const createdGroup =  await service.createGroup(body, user)
+      const createdGroup:GroupResponseDto =  await service.createGroup(body, user)
 
       expect(mockPrismaCreateGroup).toBeCalledWith({
         data: {
@@ -398,8 +399,8 @@ describe('GroupService', () => {
     };
 
     it('should update the name of the group equals to the provided Id', async () => {
-      let mockGroup = mockGroups.find(user => user.id == filters.id);
-      let mockGroupUpdated = {
+      const mockGroup = mockGroups.find(user => user.id == filters.id);
+      const mockGroupUpdated = {
         ...mockGroup,
         name: body.name,
       };
