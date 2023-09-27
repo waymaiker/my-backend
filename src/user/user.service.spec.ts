@@ -163,8 +163,8 @@ describe('UserService', () => {
     }
 
     it('should update the name of the user with the provided Id', async () => {
-      const mockUser:Object = mockUsers.find(user => user.id == filters.id);
-      const mockUserUpdated:Object = {
+      const mockUser:object = mockUsers.find(user => user.id == filters.id);
+      const mockUserUpdated:object = {
         ...mockUser,
         pseudo: body.pseudo
       };
