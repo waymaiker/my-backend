@@ -217,7 +217,7 @@ describe('UserController', () => {
   describe('updateUserById', () => {
     const filters = { id: "d3a8a76d-cdc0-4b58-8ee3-6f51769c7141" };
     const mockGetUserByIdResult = new UserResponseDto(data.users.filter(user => user.id == filters.id).shift());
-    let body = {
+    const body = {
       pseudo: 'PREMIUM4',
       profile_language: Language.ENGLISH,
       scope: SubscriptionType.PREMIUM,
