@@ -119,6 +119,7 @@ describe('UserService', () => {
             user: {
               create: jest.fn().mockReturnValue(data.users[0]),
               findMany: jest.fn().mockReturnValue([mockUsers]),
+              findUniqueOrThrow: jest.fn().mockReturnValue(null),
               findUnique: jest.fn().mockReturnValue(null),
             },
           }
