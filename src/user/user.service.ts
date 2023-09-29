@@ -19,7 +19,6 @@ export interface CreateUser {
   user_type: UserType,
   scope: SubscriptionType
 }
-
 interface UpdateUser {
   pseudo?: string,
   profile_language?: Language,
@@ -65,12 +64,12 @@ export class UserService {
     }: CreateUser
   ){
 
-    const emailAlreayUsed = await this.prismaService.user.findUnique({ where: { email } })
-    if(emailAlreayUsed){
+    const emailAlreadyUsed = await this.prismaService.user.findUnique({ where: { email } })
+    if(emailAlreadyUsed){
       throw new ConflictException("This email is already used")
     }
 
-    const pseudoAlreadyUsed = await this.prismaService.user.findUnique({ where: { pseudo } })
+    const pseudoAlreadyUsed = await this.prismaService.user.findUniqueOrThrow({ where: { pseudo } })
     if(pseudoAlreadyUsed){
       throw new ConflictException("This pseudo is already used");
     }
@@ -92,10 +91,12 @@ export class UserService {
   }
 
   async updateUserById(id: string, body: UpdateUser) {
-    await this.getUserById(id)
+    const user = await this.prismaService.user.findUniqueOrThrow({ where: { id } });
+    if(!user){
+      throw new NotFoundException();
+    };
 
     const pseudoAlreadyUsed = await this.prismaService.user.findUnique({ where: { pseudo: body.pseudo } })
-
     if(pseudoAlreadyUsed){
       throw new ConflictException("This pseudo is already used");
     }

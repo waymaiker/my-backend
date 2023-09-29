@@ -28,13 +28,13 @@ export class UserController {
 
   @Roles(UserType.USER, UserType.ADMIN, UserType.SUPER_ADMIN)
   @Get(':id')
-  getUserById(@Param('id', ParseUUIDPipe) id: string){
+  getUserById(@Param('id', ParseUUIDPipe) id: string):Promise<UserResponseDto>{
     return this.userService.getUserById(id);
   }
 
   @Roles(UserType.ADMIN, UserType.SUPER_ADMIN)
   @Post()
-  createUser(@Body() body: CreateUserDto){
+  createUser(@Body() body: CreateUserDto):Promise<UserResponseDto>{
     return this.userService.createUser(body);
   }
 
@@ -43,14 +43,14 @@ export class UserController {
   updateUserById(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() body: UpdateUserDto,
-  ) {
+  ):Promise<UserResponseDto>{
     return this.userService.updateUserById(id, body);
   }
 
   @Roles(UserType.USER, UserType.ADMIN, UserType.SUPER_ADMIN)
   @HttpCode(204)
   @Delete(':id')
-  deleteUser(@Param('id', ParseUUIDPipe) id: string){
+  deleteUser(@Param('id', ParseUUIDPipe) id: string):Promise<UserResponseDto[]>{
     return this.userService.deleteUser(id);
   }
 }
