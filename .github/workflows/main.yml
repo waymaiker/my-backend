@@ -1,16 +1,17 @@
 name: Run Tests
 
 on:
-  pull_request: 
+  pull_request:
     branches: [main]
-  workflow_dispatch: 
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
-    steps: 
+    steps:
       - uses: actions/checkout@v2
+      - name: Set up node js
       - uses: actions/setup-node@v2
         with:
           node-version: 18
