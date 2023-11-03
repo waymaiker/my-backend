@@ -9,7 +9,7 @@ async function bootstrap() {
     origin: '*',
     credentials: true,
     methods: 'GET, PUT, POST, DELETE',
-    allowedHeaders: 'Content-Type, Authorization',
+    allowedHeaders: 'Content-Type',
   });
 
   app.useGlobalPipes(
